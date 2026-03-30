@@ -47,48 +47,60 @@
             left: 0;
             right: 0;
             z-index: 100;
+            height: 72px;
             background: transparent;
-            padding: 22px 0;
             border-bottom: 1px solid transparent;
-            transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease, padding 0.35s ease;
+            transition: height 0.35s ease, background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
         }
 
         .lp-nav.scrolled {
-            background: rgba(8,12,22,0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom-color: rgba(255,255,255,0.07);
-            padding: 14px 0;
+            height: 65px;
+            background: rgba(14,19,32,0.6);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom-color: rgba(32,40,60,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
         .lp-nav__inner {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
             display: flex;
             align-items: center;
-            gap: 40px;
         }
 
         .lp-nav__logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #fff;
-            text-decoration: none;
-            letter-spacing: -0.02em;
+            flex: 0 0 20%;
+            display: flex;
+            align-items: center;
         }
 
-        .lp-nav__logo span { color: var(--orange); }
+        .lp-nav__logo img { width: 111px; height: 28px; display: block; }
+
+        .lp-nav__right {
+            flex: 0 0 80%;
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            gap: 31px;
+        }
 
         .lp-nav__links {
             display: flex;
             align-items: center;
-            gap: 32px;
+            flex-direction: row-reverse;
+            gap: 31px;
             list-style: none;
         }
 
         .lp-nav__links a {
-            color: rgba(255,255,255,0.75);
-            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
             font-size: 0.9rem;
-            font-weight: 500;
+            color: #7588A3;
+            text-decoration: none;
             transition: color 0.2s;
         }
 
@@ -109,13 +121,15 @@
         }
 
         .btn-primary {
-            background: var(--orange);
-            color: #fff;
-            padding: 13px 24px;
-            font-size: 0.9rem;
+            background: #F9460C;
+            color: #000;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 9px;
         }
 
-        .btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+        .btn-primary:hover { background: #e03d0a; transform: translateY(-1px); }
 
         .btn-outline {
             background: transparent;
@@ -311,6 +325,78 @@
             font-size: 0.9rem;
             color: rgba(255,255,255,0.55);
             line-height: 1.65;
+        }
+
+        /* ── Robôs ────────────────────────────────────────────────────── */
+        .robots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .robot-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .robot-card:hover {
+            border-color: rgba(249,70,12,0.35);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+            transform: translateY(-4px);
+        }
+
+        .robot-card__video {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            background: #000;
+        }
+
+        .robot-card__video iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .robot-card__body {
+            padding: 24px;
+        }
+
+        .robot-card__tag {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #F9460C;
+            background: rgba(249,70,12,0.1);
+            border: 1px solid rgba(249,70,12,0.2);
+            border-radius: 100px;
+            padding: 3px 10px;
+            margin-bottom: 10px;
+        }
+
+        .robot-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
+        }
+
+        .robot-card__text {
+            font-size: 0.875rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 900px) {
+            .robots-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
         }
 
         /* ── Metodologia ──────────────────────────────────────────────── */
@@ -672,14 +758,16 @@
 
 <!-- ── Navbar ──────────────────────────────────────────────────────────── -->
 <nav class="lp-nav">
-    <div class="container">
-        <div class="lp-nav__inner">
-            <a href="#" class="lp-nav__logo"><img src="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png" alt="SlyBot" style="height:36px; width:auto;"></a>
-            <ul class="lp-nav__links">
-                <li><a href="#como-funciona">Como Funciona</a></li>
-                <li><a href="#planos">Planos</a></li>
-            </ul>
+    <div class="lp-nav__inner">
+        <div class="lp-nav__logo">
+            <a href="#topo"><img src="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png" alt="SlyBot" loading="lazy"></a>
+        </div>
+        <div class="lp-nav__right">
             <a href="#planos" class="btn btn-primary">Começar agora</a>
+            <ul class="lp-nav__links">
+                <li><a href="#planos">Planos</a></li>
+                <li><a href="#como-funciona">Como Funciona</a></li>
+            </ul>
         </div>
     </div>
 </nav>
@@ -711,6 +799,49 @@
                 <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 100% Automatizado
             </span>
+        </div>
+    </div>
+</section>
+
+<!-- ── Robôs ─────────────────────────────────────────────────────────────── -->
+<section class="lp-section lp-section--connect" id="robos">
+    <div class="container">
+        <div class="section-header section-header--center">
+            <span class="section-label">Nossos Robôs</span>
+            <h2 class="section-title">Conheça nossos Robôs</h2>
+            <p class="section-sub">Estratégias distintas, desenvolvidas para diferentes perfis e condições de mercado</p>
+        </div>
+        <div class="robots-grid">
+            <div class="robot-card">
+                <div class="robot-card__video">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_1" title="SLYBOT STATS" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="robot-card__body">
+                    <span class="robot-card__tag">Robô 01</span>
+                    <h3 class="robot-card__title">SLYBOT STATS</h3>
+                    <p class="robot-card__text">Opera com base em análise estatística e padrões de comportamento histórico do mercado.</p>
+                </div>
+            </div>
+            <div class="robot-card">
+                <div class="robot-card__video">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_2" title="SLYBOT ATR" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="robot-card__body">
+                    <span class="robot-card__tag">Robô 02</span>
+                    <h3 class="robot-card__title">SLYBOT ATR</h3>
+                    <p class="robot-card__text">Utiliza o indicador ATR para identificar volatilidade e definir entradas e stops dinâmicos.</p>
+                </div>
+            </div>
+            <div class="robot-card">
+                <div class="robot-card__video">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_3" title="SLYBOT GRID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <div class="robot-card__body">
+                    <span class="robot-card__tag">Robô 03</span>
+                    <h3 class="robot-card__title">SLYBOT GRID</h3>
+                    <p class="robot-card__text">Estratégia em grade para mercados lateralizados, capturando oscilações dentro de uma faixa de preço.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
