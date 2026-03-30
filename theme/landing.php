@@ -814,7 +814,7 @@
         <div class="robots-grid">
             <div class="robot-card">
                 <div class="robot-card__video">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_1" title="SLYBOT STATS" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT STATS" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 </div>
                 <div class="robot-card__body">
                     <span class="robot-card__tag">Robô 01</span>
@@ -824,7 +824,7 @@
             </div>
             <div class="robot-card">
                 <div class="robot-card__video">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_2" title="SLYBOT ATR" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT ATR" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 </div>
                 <div class="robot-card__body">
                     <span class="robot-card__tag">Robô 02</span>
@@ -834,7 +834,7 @@
             </div>
             <div class="robot-card">
                 <div class="robot-card__video">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_3" title="SLYBOT GRID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT GRID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 </div>
                 <div class="robot-card__body">
                     <span class="robot-card__tag">Robô 03</span>
