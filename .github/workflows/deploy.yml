@@ -20,7 +20,7 @@ jobs:
           script: |
             cd ~/slybot-site && git pull
             rsync -a --delete ~/slybot-site/theme/                            ~/domains/slybot.com.br/public_html/wp-content/themes/hello-theme-child-master/
-            rsync -a --delete ~/slybot-site/plugins/slybot-course/            ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-course/
-            rsync -a --delete ~/slybot-site/plugins/slybot-license-manager/   ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-license-manager/
-            rsync -a --delete ~/slybot-site/plugins/slybot-strategies/        ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-strategies/
+            rsync -a --delete ~/slybot-site/plugins/slybot-course/slybot-course/            ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-course/
+            rsync -a --delete ~/slybot-site/plugins/slybot-license-manager/slybot-license-manager/   ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-license-manager/
+            rsync -a --delete ~/slybot-site/plugins/slybot-strategies/slybot-strategies/        ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-strategies/
             echo "Deploy concluído."
