@@ -640,7 +640,7 @@
 <nav class="lp-nav">
     <div class="container">
         <div class="lp-nav__inner">
-            <a href="#" class="lp-nav__logo">sly<span>bot</span></a>
+            <a href="#" class="lp-nav__logo"><img src="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png" alt="SlyBot" style="height:36px; width:auto;"></a>
             <ul class="lp-nav__links">
                 <li><a href="#como-funciona">Como Funciona</a></li>
                 <li><a href="#planos">Planos</a></li>
@@ -874,7 +874,7 @@
                     <li class="disabled"><span class="no">✕</span> Comunidade exclusiva</li>
                     <li class="disabled"><span class="no">✕</span> Mesa proprietária permitida</li>
                 </ul>
-                <a href="#" class="btn btn-primary btn-full">Comprar agora</a>
+                <a href="https://slybot.com.br/checkout/?add-to-cart=274" class="btn btn-primary btn-full">Comprar agora</a>
             </div>
             <!-- Plano Profissional -->
             <div class="plano-card plano-card--popular">
@@ -891,7 +891,7 @@
                     <li><span class="check">✓</span> Comunidade exclusiva</li>
                     <li><span class="check">✓</span> Mesa proprietária permitida</li>
                 </ul>
-                <a href="#" class="btn btn-primary btn-full">Comprar agora</a>
+                <a href="https://slybot.com.br/checkout/?add-to-cart=275" class="btn btn-primary btn-full">Comprar agora</a>
             </div>
         </div>
         <p style="text-align:center; font-size:0.78rem; color:var(--text-muted); margin-top:24px;">*Acesso permanente enquanto o projeto SlyBot existir e estiver ativo.</p>
