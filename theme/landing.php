@@ -120,9 +120,34 @@
 
         /* ── Hero ─────────────────────────────────────────────────────── */
         .lp-hero {
+            position: relative;
+            overflow: hidden;
             background: var(--bg-dark);
             padding: 100px 0 80px;
             text-align: center;
+        }
+
+        .lp-hero__video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .lp-hero__overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(8,12,22,0.55), rgba(8,12,22,0.85));
+            z-index: 1;
+        }
+
+        .lp-hero .container {
+            position: relative;
+            z-index: 2;
         }
 
         .lp-hero__label {
@@ -652,6 +677,10 @@
 
 <!-- ── Hero ────────────────────────────────────────────────────────────── -->
 <section class="lp-hero" id="topo">
+    <video class="lp-hero__video" autoplay muted loop playsinline>
+        <source src="https://slybot.com.br/wp-content/uploads/2026/03/Whisk_ezm5gtyygjzmntnw0iz1utytmmmirtl4qdm50ym.mp4" type="video/mp4">
+    </video>
+    <div class="lp-hero__overlay"></div>
     <div class="container">
         <span class="lp-hero__label">Robô de Day Trade Automatizado</span>
         <h1>Opere com <span>disciplina</span> e execução consistente</h1>
