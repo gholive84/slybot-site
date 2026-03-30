@@ -1,0 +1,26 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 65002
+          script: |
+            cd ~/slybot-site && git pull
+            rsync -a --delete ~/slybot-site/theme/                            ~/domains/slybot.com.br/public_html/wp-content/themes/hello-theme-child-master/
+            rsync -a --delete ~/slybot-site/plugins/slybot-course/            ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-course/
+            rsync -a --delete ~/slybot-site/plugins/slybot-license-manager/   ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-license-manager/
+            rsync -a --delete ~/slybot-site/plugins/slybot-strategies/        ~/domains/slybot.com.br/public_html/wp-content/plugins/slybot-strategies/
+            echo "Deploy concluído."
