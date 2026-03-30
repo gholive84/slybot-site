@@ -387,6 +387,79 @@ function slybot_custom_thankyou( $order_id ) {
 
 
 /* =====================================================
+   LISTA DE ESPERA — AJAX + EMAIL
+===================================================== */
+
+add_action( 'wp_ajax_slybot_waitlist',        'slybot_waitlist_handler' );
+add_action( 'wp_ajax_nopriv_slybot_waitlist', 'slybot_waitlist_handler' );
+
+function slybot_waitlist_handler() {
+
+    check_ajax_referer( 'slybot_waitlist_nonce', 'nonce' );
+
+    $nome     = sanitize_text_field( $_POST['nome']     ?? '' );
+    $email    = sanitize_email(      $_POST['email']    ?? '' );
+    $telefone = sanitize_text_field( $_POST['telefone'] ?? '' );
+
+    if ( empty( $nome ) || empty( $email ) || empty( $telefone ) ) {
+        wp_send_json_error( [ 'message' => 'Preencha todos os campos.' ] );
+    }
+
+    if ( ! is_email( $email ) ) {
+        wp_send_json_error( [ 'message' => 'E-mail inválido.' ] );
+    }
+
+    $body = '<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>SlyBot - Lista de Espera</title></head>
+<body style="margin:0;padding:0;background:#020817;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#020817;padding:40px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#020817;border:1px solid #1e293b;border-radius:8px;padding:40px;">
+<tr><td>
+<p style="margin:0 0 25px 0;"><img src="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png" width="160" alt="SlyBot"></p>
+<h1 style="font-size:28px;margin:0 0 20px 0;color:#ffffff;">Você entrou na lista de espera 🚀</h1>
+<p style="color:#cbd5f5;font-size:16px;">Olá <strong>' . esc_html( $nome ) . '</strong>,</p>
+<p style="color:#cbd5f5;font-size:16px;line-height:1.6;">Seu cadastro na <strong>lista de espera do SlyBot</strong> foi recebido com sucesso.</p>
+<p style="color:#cbd5f5;font-size:16px;line-height:1.6;">Assim que o robô estiver disponível para aquisição, você será um dos primeiros a ser avisado.</p>
+<hr style="border:none;border-top:1px solid #1e293b;margin:30px 0;">
+<h3 style="margin-bottom:15px;">Seus dados cadastrados</h3>
+<p style="color:#cbd5f5;margin:6px 0;"><strong>Nome:</strong> ' . esc_html( $nome ) . '</p>
+<p style="color:#cbd5f5;margin:6px 0;"><strong>Email:</strong> ' . esc_html( $email ) . '</p>
+<p style="color:#cbd5f5;margin:6px 0;"><strong>Telefone:</strong> ' . esc_html( $telefone ) . '</p>
+<hr style="border:none;border-top:1px solid #1e293b;margin:30px 0;">
+<h3 style="margin-bottom:15px;">O que é o SlyBot?</h3>
+<p style="color:#cbd5f5;line-height:1.6;">O <strong>SlyBot</strong> é um robô de trading automatizado desenvolvido para operar no <strong>MetaTrader 5</strong>, utilizando estratégias avançadas para identificar oportunidades no mercado.</p>
+<p style="color:#cbd5f5;line-height:1.6;">Quando o lançamento oficial acontecer você receberá:</p>
+<ul style="color:#cbd5f5;line-height:1.8;padding-left:20px;">
+<li>Link para aquisição do robô</li>
+<li>Download do SlyBot</li>
+<li>Licença de ativação</li>
+<li>Acesso ao curso de instalação</li>
+</ul>
+<hr style="border:none;border-top:1px solid #1e293b;margin:30px 0;">
+<p style="color:#94a3b8;font-size:14px;">Você recebeu este email porque se cadastrou na lista de espera do SlyBot.</p>
+<p style="color:#94a3b8;font-size:14px;">© SlyBot - Todos os direitos reservados</p>
+</td></tr></table>
+</td></tr></table>
+</body></html>';
+
+    $headers = [
+        'Content-Type: text/html; charset=UTF-8',
+        'From: SlyBot <contato@slybot.com.br>',
+    ];
+
+    $sent = wp_mail( $email, 'Você entrou na lista de espera do SlyBot 🚀', $body, $headers );
+
+    if ( $sent ) {
+        wp_send_json_success( [ 'message' => 'Cadastro realizado! Verifique seu e-mail.' ] );
+    } else {
+        wp_send_json_error( [ 'message' => 'Erro ao enviar e-mail. Tente novamente.' ] );
+    }
+}
+
+
+/* =====================================================
    ESTILOS GERAIS SLYBOT (login notice + thankyou)
 ===================================================== */
 

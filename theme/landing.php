@@ -620,41 +620,103 @@
 
         /* ── Lista de Espera ──────────────────────────────────────────── */
         .waitlist-box {
-            background: rgba(255,106,0,0.07);
-            border: 1px solid rgba(255,106,0,0.2);
-            border-radius: 16px;
-            padding: 48px;
+            background: linear-gradient(135deg, rgba(249,70,12,0.06) 0%, rgba(249,70,12,0.03) 100%);
+            border: 1px solid rgba(249,70,12,0.18);
+            border-radius: 20px;
+            padding: 52px 56px;
             text-align: center;
-            max-width: 580px;
+            max-width: 640px;
             margin: 0 auto;
+            box-shadow: 0 0 80px rgba(249,70,12,0.06);
         }
 
         .waitlist-form {
             display: flex;
-            gap: 10px;
-            margin-top: 28px;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 32px;
         }
 
-        .waitlist-form input {
-            flex: 1;
+        .waitlist-field {
+            position: relative;
+            text-align: left;
+        }
+
+        .waitlist-field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 6px;
+        }
+
+        .waitlist-field input {
+            width: 100%;
             padding: 14px 18px;
-            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,0.05);
+            border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             font-size: 0.92rem;
             font-family: inherit;
+            color: #fff;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .waitlist-form input:focus {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(255,106,0,0.12);
+        .waitlist-field input::placeholder { color: rgba(255,255,255,0.25); }
+
+        .waitlist-field input:focus {
+            border-color: #F9460C;
+            box-shadow: 0 0 0 3px rgba(249,70,12,0.12);
+        }
+
+        .waitlist-field input.error {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+        }
+
+        .waitlist-field__msg {
+            font-size: 0.75rem;
+            margin-top: 5px;
+            color: #EF4444;
+            display: none;
+        }
+
+        .waitlist-field__msg.visible { display: block; }
+
+        .waitlist-submit {
+            margin-top: 8px;
+        }
+
+        .waitlist-feedback {
+            margin-top: 16px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .waitlist-feedback.success {
+            display: block;
+            background: rgba(34,197,94,0.1);
+            border: 1px solid rgba(34,197,94,0.25);
+            color: #4ADE80;
+        }
+
+        .waitlist-feedback.error-msg {
+            display: block;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: #F87171;
         }
 
         .waitlist-note {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-top: 14px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            margin-top: 16px;
         }
 
         /* ── FAQ ──────────────────────────────────────────────────────── */
@@ -747,7 +809,7 @@
             .lp-nav__links { display: none; }
             .card-grid--2, .card-grid--3 { grid-template-columns: 1fr; }
             .publico-grid  { grid-template-columns: 1fr; }
-            .waitlist-form { flex-direction: column; }
+            .waitlist-box { padding: 32px 20px; }
             .lp-hero { padding: 72px 0 60px; }
             .lp-section { padding: 64px 0; }
             .waitlist-box { padding: 32px 24px; }
@@ -1069,17 +1131,37 @@
 </section>
 
 <!-- ── Lista de Espera ──────────────────────────────────────────────────── -->
-<section class="lp-section lp-section--white">
+<section class="lp-section lp-section--white" id="lista-espera">
     <div class="container">
         <div class="waitlist-box">
             <span class="section-label" style="display:block; margin-bottom:12px;">Lista de espera</span>
-            <h2 class="section-title">Vagas limitadas</h2>
-            <p class="section-sub" style="margin:0 auto;">Entre na lista de espera e seja avisado quando abrir novas vagas com condição especial.</p>
-            <form class="waitlist-form" onsubmit="return false;">
-                <input type="email" placeholder="seu@email.com" required>
-                <button type="submit" class="btn btn-primary">Entrar na lista</button>
+            <h2 class="section-title">Garanta sua vaga</h2>
+            <p class="section-sub" style="margin:0 auto;">Cadastre-se e seja avisado em primeira mão quando o SlyBot abrir novas vagas.</p>
+            <form class="waitlist-form" id="waitlistForm" novalidate>
+                <?php wp_nonce_field( 'slybot_waitlist_nonce', 'slybot_nonce' ); ?>
+                <div class="waitlist-field">
+                    <label for="wl-nome">Nome completo</label>
+                    <input type="text" id="wl-nome" name="nome" placeholder="Seu nome" autocomplete="name">
+                    <span class="waitlist-field__msg" id="msg-nome">Informe seu nome completo.</span>
+                </div>
+                <div class="waitlist-field">
+                    <label for="wl-email">E-mail</label>
+                    <input type="email" id="wl-email" name="email" placeholder="seu@email.com" autocomplete="email">
+                    <span class="waitlist-field__msg" id="msg-email">Informe um e-mail válido.</span>
+                </div>
+                <div class="waitlist-field">
+                    <label for="wl-telefone">WhatsApp / Telefone</label>
+                    <input type="tel" id="wl-telefone" name="telefone" placeholder="(00) 00000-0000" autocomplete="tel" maxlength="15">
+                    <span class="waitlist-field__msg" id="msg-telefone">Informe um telefone válido.</span>
+                </div>
+                <div class="waitlist-submit">
+                    <button type="submit" class="btn btn-primary btn-full btn-lg" id="waitlistBtn">
+                        Quero entrar na lista
+                    </button>
+                </div>
             </form>
-            <p class="waitlist-note">Sem spam. Apenas um e-mail quando abrir vagas.</p>
+            <div class="waitlist-feedback" id="waitlistFeedback"></div>
+            <p class="waitlist-note">🔒 Seus dados são protegidos. Sem spam.</p>
         </div>
     </div>
 </section>
@@ -1146,7 +1228,101 @@
 </footer>
 
 <script>
-// Navbar scroll
+// ── Waitlist ─────────────────────────────────────────────────────────────
+
+// Phone mask
+document.getElementById('wl-telefone').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 10) {
+        v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    } else if (v.length > 6) {
+        v = v.replace(/^(\d{2})(\d{4})(\d*)$/, '($1) $2-$3');
+    } else if (v.length > 2) {
+        v = v.replace(/^(\d{2})(\d*)$/, '($1) $2');
+    }
+    e.target.value = v;
+});
+
+function validateWaitlist() {
+    let valid = true;
+    const nome  = document.getElementById('wl-nome');
+    const email = document.getElementById('wl-email');
+    const tel   = document.getElementById('wl-telefone');
+
+    [nome, email, tel].forEach(f => {
+        f.classList.remove('error');
+        document.getElementById('msg-' + f.id.replace('wl-', '')).classList.remove('visible');
+    });
+
+    if (nome.value.trim().length < 3) {
+        nome.classList.add('error');
+        document.getElementById('msg-nome').classList.add('visible');
+        valid = false;
+    }
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(email.value.trim())) {
+        email.classList.add('error');
+        document.getElementById('msg-email').classList.add('visible');
+        valid = false;
+    }
+
+    const telClean = tel.value.replace(/\D/g, '');
+    if (telClean.length < 10) {
+        tel.classList.add('error');
+        document.getElementById('msg-telefone').classList.add('visible');
+        valid = false;
+    }
+
+    return valid;
+}
+
+document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validateWaitlist()) return;
+
+    const btn      = document.getElementById('waitlistBtn');
+    const feedback = document.getElementById('waitlistFeedback');
+    const nonce    = document.getElementById('slybot_nonce').value;
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    feedback.className = 'waitlist-feedback';
+
+    const data = new FormData();
+    data.append('action',   'slybot_waitlist');
+    data.append('nonce',    nonce);
+    data.append('nome',     document.getElementById('wl-nome').value.trim());
+    data.append('email',    document.getElementById('wl-email').value.trim());
+    data.append('telefone', document.getElementById('wl-telefone').value.trim());
+
+    fetch('<?php echo esc_url( admin_url("admin-ajax.php") ); ?>', {
+        method: 'POST',
+        body: data
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            feedback.textContent = '✓ ' + res.data.message;
+            feedback.className = 'waitlist-feedback success';
+            document.getElementById('waitlistForm').reset();
+            btn.textContent = 'Cadastrado!';
+        } else {
+            feedback.textContent = res.data.message;
+            feedback.className = 'waitlist-feedback error-msg';
+            btn.disabled = false;
+            btn.textContent = 'Quero entrar na lista';
+        }
+    })
+    .catch(() => {
+        feedback.textContent = 'Erro de conexão. Tente novamente.';
+        feedback.className = 'waitlist-feedback error-msg';
+        btn.disabled = false;
+        btn.textContent = 'Quero entrar na lista';
+    });
+});
+
+// ── Navbar scroll
 const nav = document.querySelector('.lp-nav');
 window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 40);
