@@ -29,7 +29,7 @@
         body {
             font-family: 'Inter', sans-serif;
             color: var(--text-primary);
-            background: var(--bg-white);
+            background: var(--bg-dark);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
         }
@@ -42,18 +42,29 @@
 
         /* ── Navbar ───────────────────────────────────────────────────── */
         .lp-nav {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
-            background: var(--bg-dark);
-            padding: 18px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: transparent;
+            padding: 22px 0;
+            border-bottom: 1px solid transparent;
+            transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease, padding 0.35s ease;
+        }
+
+        .lp-nav.scrolled {
+            background: rgba(8,12,22,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom-color: rgba(255,255,255,0.07);
+            padding: 14px 0;
         }
 
         .lp-nav__inner {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 40px;
         }
 
         .lp-nav__logo {
@@ -123,7 +134,7 @@
             position: relative;
             overflow: hidden;
             background: var(--bg-dark);
-            padding: 100px 0 80px;
+            padding: 160px 0 120px;
             text-align: center;
         }
 
@@ -133,7 +144,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.35;
+            opacity: 0.22;
             z-index: 0;
             pointer-events: none;
         }
@@ -141,7 +152,7 @@
         .lp-hero__overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(8,12,22,0.55), rgba(8,12,22,0.85));
+            background: linear-gradient(to bottom, rgba(8,12,22,0.72) 0%, rgba(8,12,22,0.92) 80%, rgba(8,12,22,1) 100%);
             z-index: 1;
         }
 
@@ -215,10 +226,11 @@
         .lp-hero__badge svg { width: 14px; height: 14px; fill: var(--orange); flex-shrink: 0; }
 
         /* ── Section Base ─────────────────────────────────────────────── */
-        .lp-section { padding: 88px 0; }
+        .lp-section { padding: 96px 0; }
         .lp-section--dark { background: var(--bg-dark); }
-        .lp-section--light { background: var(--bg-light); }
-        .lp-section--white { background: var(--bg-white); }
+        .lp-section--connect { background: linear-gradient(to bottom, #080C16 0%, #0D1524 100%); }
+        .lp-section--light { background: #0D1524; }
+        .lp-section--white { background: #111827; }
 
         .section-label {
             display: block;
@@ -234,7 +246,7 @@
             font-size: clamp(1.6rem, 3vw, 2.2rem);
             font-weight: 700;
             line-height: 1.25;
-            color: var(--text-primary);
+            color: #fff;
             margin-bottom: 12px;
         }
 
@@ -242,7 +254,7 @@
 
         .section-sub {
             font-size: 1rem;
-            color: var(--text-muted);
+            color: rgba(255,255,255,0.55);
             max-width: 540px;
             line-height: 1.7;
         }
@@ -259,14 +271,14 @@
         .card-grid--3 { grid-template-columns: repeat(3, 1fr); }
 
         .card {
-            background: var(--bg-white);
-            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 14px;
             padding: 28px;
             transition: all 0.2s ease;
         }
 
-        .card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+        .card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.07); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
 
         .card--dark {
             background: rgba(255,255,255,0.04);
@@ -291,19 +303,15 @@
         .card__title {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--text-primary);
+            color: #fff;
             margin-bottom: 8px;
         }
 
-        .card--dark .card__title { color: #fff; }
-
         .card__text {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: rgba(255,255,255,0.55);
             line-height: 1.65;
         }
-
-        .card--dark .card__text { color: rgba(255,255,255,0.55); }
 
         /* ── Metodologia ──────────────────────────────────────────────── */
         .step-number {
@@ -437,8 +445,8 @@
         }
 
         .plano-card {
-            background: var(--bg-white);
-            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 36px;
             position: relative;
@@ -470,14 +478,14 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: var(--text-muted);
+            color: rgba(255,255,255,0.45);
             margin-bottom: 16px;
         }
 
         .plano-card__price {
             font-size: 2.5rem;
             font-weight: 800;
-            color: var(--text-primary);
+            color: #fff;
             line-height: 1;
             margin-bottom: 4px;
         }
@@ -503,7 +511,7 @@
 
         .plano-card__divider {
             border: none;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.08);
             margin: 24px 0;
         }
 
@@ -514,13 +522,13 @@
             align-items: flex-start;
             gap: 10px;
             font-size: 0.88rem;
-            color: var(--text-primary);
+            color: rgba(255,255,255,0.8);
             line-height: 1.4;
         }
 
         .plano-card__features li .check { color: #22C55E; font-weight: 700; flex-shrink: 0; }
-        .plano-card__features li .no    { color: #D1D5DB; font-weight: 700; flex-shrink: 0; }
-        .plano-card__features li.disabled { color: #9CA3AF; }
+        .plano-card__features li .no    { color: rgba(255,255,255,0.2); font-weight: 700; flex-shrink: 0; }
+        .plano-card__features li.disabled { color: rgba(255,255,255,0.3); }
 
         .btn-full { width: 100%; }
 
@@ -567,9 +575,10 @@
         .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
         .faq-item {
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 12px;
             overflow: hidden;
+            background: rgba(255,255,255,0.03);
         }
 
         .faq-question {
@@ -583,20 +592,20 @@
             gap: 16px;
             font-size: 0.95rem;
             font-weight: 600;
-            color: var(--text-primary);
+            color: #fff;
             cursor: pointer;
             text-align: left;
             font-family: inherit;
             transition: background 0.15s;
         }
 
-        .faq-question:hover { background: var(--bg-light); }
-        .faq-question.active { background: var(--bg-light); }
+        .faq-question:hover { background: rgba(255,255,255,0.04); }
+        .faq-question.active { background: rgba(255,255,255,0.04); }
 
         .faq-icon {
             width: 22px;
             height: 22px;
-            background: var(--bg-light);
+            background: rgba(255,106,0,0.15);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -707,7 +716,7 @@
 </section>
 
 <!-- ── Metodologia ──────────────────────────────────────────────────────── -->
-<section class="lp-section lp-section--light" id="como-funciona">
+<section class="lp-section lp-section--connect" id="como-funciona">
     <div class="container">
         <div class="section-header section-header--center">
             <span class="section-label">Metodologia</span>
@@ -891,7 +900,7 @@
             <div class="plano-card">
                 <div class="plano-card__name">Plano Anual</div>
                 <div class="plano-card__from">De R$ 1.995</div>
-                <div class="plano-card__price"><sup>R$</sup>899</div>
+                <div class="plano-card__price"><sup>R$</sup>995</div>
                 <div class="plano-card__period">Acesso por 12 meses</div>
                 <hr class="plano-card__divider">
                 <ul class="plano-card__features">
@@ -909,7 +918,8 @@
             <div class="plano-card plano-card--popular">
                 <div class="plano-card__badge">Mais popular</div>
                 <div class="plano-card__name">Plano Profissional</div>
-                <div class="plano-card__price"><sup>R$</sup>1.599</div>
+                <div class="plano-card__from">De R$ 4.495</div>
+                <div class="plano-card__price"><sup>R$</sup>2.495</div>
                 <div class="plano-card__period">Acesso permanente*</div>
                 <hr class="plano-card__divider">
                 <ul class="plano-card__features">
@@ -1005,6 +1015,12 @@
 </footer>
 
 <script>
+// Navbar scroll
+const nav = document.querySelector('.lp-nav');
+window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
 // FAQ accordion
 document.querySelectorAll('.faq-question').forEach(btn => {
     btn.addEventListener('click', () => {
