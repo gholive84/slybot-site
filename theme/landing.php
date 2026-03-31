@@ -331,31 +331,33 @@
         .robots-list {
             display: flex;
             flex-direction: column;
-            gap: 48px;
         }
 
         .robot-block {
+            width: 100%;
+            padding: 88px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .robot-block:nth-child(even) {
+            background: rgba(255,255,255,0.025);
+        }
+
+        .robot-block__inner {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 48px;
+            gap: 72px;
             align-items: center;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
         }
 
-        .robot-block:hover {
-            border-color: rgba(249,70,12,0.35);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.4);
-        }
-
-        .robot-block--reverse {
+        .robot-block--reverse .robot-block__inner {
             direction: rtl;
         }
 
-        .robot-block--reverse > * {
+        .robot-block--reverse .robot-block__inner > * {
             direction: ltr;
         }
 
@@ -364,6 +366,9 @@
             width: 100%;
             padding-bottom: 56.25%;
             background: #000;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 28px 72px rgba(0,0,0,0.55);
         }
 
         .robot-block__video iframe {
@@ -375,78 +380,58 @@
         }
 
         .robot-block__body {
-            padding: 40px 40px 40px 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        .robot-block--reverse .robot-block__body {
-            padding: 40px 0 40px 40px;
-        }
-
-        .robot-block__tag {
-            display: inline-block;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #F9460C;
-            background: rgba(249,70,12,0.1);
-            border: 1px solid rgba(249,70,12,0.2);
-            border-radius: 100px;
-            padding: 3px 10px;
-            margin-bottom: 14px;
-            width: fit-content;
-        }
-
         .robot-block__title {
-            font-size: 1.6rem;
+            font-size: 2rem;
             font-weight: 800;
             color: #fff;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             letter-spacing: 0.01em;
-            line-height: 1.2;
+            line-height: 1.15;
         }
 
         .robot-block__text {
-            font-size: 0.95rem;
-            color: rgba(255,255,255,0.55);
-            line-height: 1.7;
-            margin-bottom: 28px;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.75;
+            margin-bottom: 32px;
         }
 
         .robot-block__cta {
             display: inline-block;
-            padding: 14px 28px;
+            padding: 15px 32px;
             background: var(--orange);
             color: #fff;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 700;
             letter-spacing: 0.03em;
             border-radius: 8px;
             text-decoration: none;
-            transition: background 0.2s ease, transform 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
             align-self: flex-start;
+            box-shadow: 0 4px 20px rgba(249,70,12,0.35);
         }
 
         .robot-block__cta:hover {
             background: var(--orange-dark);
             transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(249,70,12,0.5);
         }
 
         @media (max-width: 900px) {
-            .robot-block {
+            .robot-block { padding: 56px 0; }
+            .robot-block__inner {
                 grid-template-columns: 1fr;
                 direction: ltr;
+                gap: 32px;
+                padding: 0 24px;
             }
-            .robot-block--reverse {
-                direction: ltr;
-            }
-            .robot-block__body,
-            .robot-block--reverse .robot-block__body {
-                padding: 28px;
-            }
+            .robot-block--reverse .robot-block__inner { direction: ltr; }
+            .robot-block__title { font-size: 1.5rem; }
         }
 
         /* ── Metodologia ──────────────────────────────────────────────── */
@@ -916,55 +901,58 @@
 </section>
 
 <!-- ── Robôs ─────────────────────────────────────────────────────────────── -->
-<section class="lp-section lp-section--connect" id="robos">
+<section class="lp-section lp-section--connect" id="robos" style="padding-bottom: 0;">
     <div class="container">
         <div class="section-header section-header--center">
             <span class="section-label">Nossos Robôs</span>
             <h2 class="section-title">Conheça nossos Robôs</h2>
             <p class="section-sub">Estratégias distintas, desenvolvidas para diferentes perfis e condições de mercado</p>
         </div>
-        <div class="robots-list">
+    </div>
+    <div class="robots-list">
 
-            <!-- Robô 01 — vídeo à esquerda -->
-            <div class="robot-block">
+        <!-- Robô 01 — vídeo à esquerda -->
+        <div class="robot-block">
+            <div class="robot-block__inner">
                 <div class="robot-block__video">
                     <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT STATS" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 </div>
                 <div class="robot-block__body">
-                    <span class="robot-block__tag">Robô 01</span>
                     <h3 class="robot-block__title">SLYBOT STATS</h3>
                     <p class="robot-block__text">Opera com base em análise estatística e padrões de comportamento histórico do mercado. Ideal para quem busca consistência com operações baseadas em dados.</p>
                     <a href="#planos" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
+        </div>
 
-            <!-- Robô 02 — vídeo à direita -->
-            <div class="robot-block robot-block--reverse">
+        <!-- Robô 02 — vídeo à direita -->
+        <div class="robot-block robot-block--reverse">
+            <div class="robot-block__inner">
                 <div class="robot-block__video">
                     <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT ATR" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 </div>
                 <div class="robot-block__body">
-                    <span class="robot-block__tag">Robô 02</span>
                     <h3 class="robot-block__title">SLYBOT ATR</h3>
                     <p class="robot-block__text">Utiliza o indicador ATR para identificar volatilidade e definir entradas e stops dinâmicos. Adapta-se automaticamente às condições do mercado.</p>
                     <a href="#planos" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
+        </div>
 
-            <!-- Robô 03 — vídeo à esquerda -->
-            <div class="robot-block">
+        <!-- Robô 03 — vídeo à esquerda -->
+        <div class="robot-block">
+            <div class="robot-block__inner">
                 <div class="robot-block__video">
                     <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT GRID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 </div>
                 <div class="robot-block__body">
-                    <span class="robot-block__tag">Robô 03</span>
                     <h3 class="robot-block__title">SLYBOT GRID</h3>
                     <p class="robot-block__text">Estratégia em grade para mercados lateralizados, capturando oscilações dentro de uma faixa de preço. Perfeito para períodos de menor tendência.</p>
                     <a href="#planos" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
-
         </div>
+
     </div>
 </section>
 
