@@ -365,6 +365,8 @@
 
         .robot-card__body {
             padding: 24px;
+            display: flex;
+            flex-direction: column;
         }
 
         .robot-card__tag {
@@ -393,6 +395,28 @@
             font-size: 0.875rem;
             color: rgba(255,255,255,0.5);
             line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .robot-card__cta {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px 20px;
+            background: var(--orange);
+            color: #fff;
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.2s ease;
+            margin-top: auto;
+        }
+
+        .robot-card__cta:hover {
+            background: var(--orange-dark);
+            transform: translateY(-1px);
         }
 
         @media (max-width: 900px) {
@@ -882,6 +906,7 @@
                     <span class="robot-card__tag">Robô 01</span>
                     <h3 class="robot-card__title">SLYBOT STATS</h3>
                     <p class="robot-card__text">Opera com base em análise estatística e padrões de comportamento histórico do mercado.</p>
+                    <a href="#planos" class="robot-card__cta">Contrate Agora</a>
                 </div>
             </div>
             <div class="robot-card">
@@ -892,6 +917,7 @@
                     <span class="robot-card__tag">Robô 02</span>
                     <h3 class="robot-card__title">SLYBOT ATR</h3>
                     <p class="robot-card__text">Utiliza o indicador ATR para identificar volatilidade e definir entradas e stops dinâmicos.</p>
+                    <a href="#planos" class="robot-card__cta">Contrate Agora</a>
                 </div>
             </div>
             <div class="robot-card">
@@ -902,6 +928,7 @@
                     <span class="robot-card__tag">Robô 03</span>
                     <h3 class="robot-card__title">SLYBOT GRID</h3>
                     <p class="robot-card__text">Estratégia em grade para mercados lateralizados, capturando oscilações dentro de uma faixa de preço.</p>
+                    <a href="#planos" class="robot-card__cta">Contrate Agora</a>
                 </div>
             </div>
         </div>
