@@ -966,7 +966,7 @@
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT STATS</h3>
                     <p class="robot-block__text">Opera com base em análise estatística e padrões de comportamento histórico do mercado. Ideal para quem busca consistência com operações baseadas em dados.</p>
-                    <a href="#planos" class="robot-block__cta">Contrate Agora</a>
+                    <a href="#lista-espera" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
         </div>
@@ -982,7 +982,7 @@
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT ATR</h3>
                     <p class="robot-block__text">Utiliza o indicador ATR para identificar volatilidade e definir entradas e stops dinâmicos. Adapta-se automaticamente às condições do mercado.</p>
-                    <a href="#planos" class="robot-block__cta">Contrate Agora</a>
+                    <a href="#lista-espera" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
         </div>
@@ -998,7 +998,7 @@
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT GRID</h3>
                     <p class="robot-block__text">Estratégia em grade para mercados lateralizados, capturando oscilações dentro de uma faixa de preço. Perfeito para períodos de menor tendência.</p>
-                    <a href="#planos" class="robot-block__cta">Contrate Agora</a>
+                    <a href="#lista-espera" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
         </div>
