@@ -15,7 +15,7 @@
     <meta property="og:url" content="https://slybot.com.br/">
     <meta property="og:title" content="SlyBot – Seu Robô de Daytrade para MT5">
     <meta property="og:description" content="Robô de day trade automatizado para MT5. Opere com disciplina e execução consistente usando análise estatística e modelos estruturados.">
-    <meta property="og:image" content="https://slybot.com.br/wp-content/uploads/2025/12/cropped-logo-1-512x512.png">
+    <meta property="og:image" content="https://slybot.com.br/wp-content/uploads/2026/04/icone-fox.png">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:site_name" content="SlyBot">
 
@@ -23,7 +23,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SlyBot – Seu Robô de Daytrade para MT5">
     <meta name="twitter:description" content="Robô de day trade automatizado para MT5. Opere com disciplina e execução consistente usando análise estatística e modelos estruturados.">
-    <meta name="twitter:image" content="https://slybot.com.br/wp-content/uploads/2025/12/cropped-logo-1-512x512.png">
+    <meta name="twitter:image" content="https://slybot.com.br/wp-content/uploads/2026/04/icone-fox.png">
 
     <?php wp_head(); ?>
     <style>
