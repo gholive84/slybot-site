@@ -451,6 +451,17 @@ function slybot_waitlist_handler() {
 
     $sent = wp_mail( $email, 'Você entrou na lista de espera do SlyBot 🚀', $body, $headers );
 
+    // Notificação interna para a equipe
+    $admin_body = '
+<html><body style="font-family:Arial,sans-serif;background:#020817;color:#fff;padding:30px;">
+<h2 style="color:#ff6a00;">Novo cadastro na lista de espera</h2>
+<p><strong>Nome:</strong> ' . esc_html( $nome ) . '</p>
+<p><strong>E-mail:</strong> ' . esc_html( $email ) . '</p>
+<p><strong>Telefone:</strong> ' . esc_html( $telefone ) . '</p>
+</body></html>';
+
+    wp_mail( 'contato@slybot.com.br', 'Lista de Espera: ' . $nome, $admin_body, $headers );
+
     if ( $sent ) {
         wp_send_json_success( [ 'message' => 'Cadastro realizado! Verifique seu e-mail.' ] );
     } else {

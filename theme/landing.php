@@ -379,6 +379,50 @@
             border: none;
         }
 
+        /* Lite embed: thumbnail + play button */
+        .yt-lite {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .yt-lite__play {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 72px;
+            height: 72px;
+            background: rgba(0,0,0,0.65);
+            border: 3px solid rgba(255,255,255,0.85);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .yt-lite:hover .yt-lite__play {
+            background: #FF4500;
+            transform: translate(-50%, -50%) scale(1.08);
+        }
+
+        .yt-lite__play svg {
+            width: 28px;
+            height: 28px;
+            fill: #fff;
+            margin-left: 4px;
+        }
+
+        .yt-lite.activated {
+            pointer-events: none;
+        }
+
         .robot-block__body {
             display: flex;
             flex-direction: column;
@@ -915,7 +959,9 @@
         <div class="robot-block">
             <div class="robot-block__inner">
                 <div class="robot-block__video">
-                    <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT STATS" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    <div class="yt-lite" data-videoid="Gc1C0KaBZxY" style="background-image:url('https://img.youtube.com/vi/Gc1C0KaBZxY/maxresdefault.jpg')">
+                        <div class="yt-lite__play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+                    </div>
                 </div>
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT STATS</h3>
@@ -929,7 +975,9 @@
         <div class="robot-block robot-block--reverse">
             <div class="robot-block__inner">
                 <div class="robot-block__video">
-                    <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT ATR" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    <div class="yt-lite" data-videoid="fKoRt76wJ38" style="background-image:url('https://img.youtube.com/vi/fKoRt76wJ38/maxresdefault.jpg')">
+                        <div class="yt-lite__play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+                    </div>
                 </div>
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT ATR</h3>
@@ -943,7 +991,9 @@
         <div class="robot-block">
             <div class="robot-block__inner">
                 <div class="robot-block__video">
-                    <iframe src="https://www.youtube.com/embed/ftOTCFMpSWA" title="SLYBOT GRID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    <div class="yt-lite" data-videoid="ONcT0qtkCig" style="background-image:url('https://img.youtube.com/vi/ONcT0qtkCig/maxresdefault.jpg')">
+                        <div class="yt-lite__play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+                    </div>
                 </div>
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT GRID</h3>
@@ -1129,7 +1179,7 @@
 </section>
 
 <!-- ── Planos ───────────────────────────────────────────────────────────── -->
-<section class="lp-section lp-section--light" id="planos">
+<section class="lp-section lp-section--light" id="planos" style="display:none">
     <div class="container">
         <div class="section-header section-header--center">
             <span class="section-label">Planos</span>
@@ -1274,6 +1324,22 @@
         <p>© <?php echo date('Y'); ?> SlyBot — Todos os direitos reservados &nbsp;·&nbsp; <a href="/politica-de-privacidade">Política de Privacidade</a> &nbsp;·&nbsp; <a href="/termos-de-uso">Termos de Uso</a></p>
     </div>
 </footer>
+
+<script>
+// ── YouTube Lite Embed ────────────────────────────────────────────────────
+document.querySelectorAll('.yt-lite').forEach(function(el) {
+    el.addEventListener('click', function() {
+        var id = el.dataset.videoid;
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+        el.classList.add('activated');
+        el.parentNode.appendChild(iframe);
+    });
+});
+</script>
 
 <script>
 // ── Waitlist ─────────────────────────────────────────────────────────────
