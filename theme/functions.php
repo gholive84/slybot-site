@@ -460,7 +460,7 @@ function slybot_waitlist_handler() {
 <p><strong>Telefone:</strong> ' . esc_html( $telefone ) . '</p>
 </body></html>';
 
-    wp_mail( 'contato@slybot.com.br', 'Lista de Espera: ' . $nome, $admin_body, $headers );
+    wp_mail( [ 'contato@slybot.com.br', 'gholive@gmail.com' ], 'Lista de Espera: ' . $nome, $admin_body, $headers );
 
     if ( $sent ) {
         wp_send_json_success( [ 'message' => 'Cadastro realizado! Verifique seu e-mail.' ] );
