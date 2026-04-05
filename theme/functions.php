@@ -484,6 +484,12 @@ function slybot_waitlist_handler() {
 
     $sent = wp_mail( $email, 'Você entrou na lista de espera do SlyBot 🚀', $body, $headers );
 
+    // Salvar em arquivo TXT
+    $upload_dir = wp_upload_dir();
+    $file_path  = $upload_dir['basedir'] . '/lista-espera.txt';
+    $line       = date('d/m/Y H:i:s') . ' | ' . $nome . ' | ' . $email . ' | ' . $telefone . PHP_EOL;
+    file_put_contents( $file_path, $line, FILE_APPEND | LOCK_EX );
+
     // Notificação interna para a equipe
     $admin_body = '
 <html><body style="font-family:Arial,sans-serif;background:#020817;color:#fff;padding:30px;">
