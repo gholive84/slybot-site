@@ -15,9 +15,7 @@
     <meta property="og:url" content="https://slybot.com.br/">
     <meta property="og:title" content="SlyBot – Seu Robô de Daytrade para MT5">
     <meta property="og:description" content="Robô de day trade automatizado para MT5. Opere com disciplina e execução consistente usando análise estatística e modelos estruturados.">
-    <meta property="og:image" content="https://slybot.com.br/wp-content/uploads/2025/12/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:site_name" content="SlyBot">
 
@@ -25,7 +23,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SlyBot – Seu Robô de Daytrade para MT5">
     <meta name="twitter:description" content="Robô de day trade automatizado para MT5. Opere com disciplina e execução consistente usando análise estatística e modelos estruturados.">
-    <meta name="twitter:image" content="https://slybot.com.br/wp-content/uploads/2025/12/og-image.jpg">
+    <meta name="twitter:image" content="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png">
 
     <?php wp_head(); ?>
     <style>
@@ -1350,7 +1348,7 @@ document.querySelectorAll('.yt-lite').forEach(function(el) {
     el.addEventListener('click', function() {
         var id = el.dataset.videoid;
         var iframe = document.createElement('iframe');
-        iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+        iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0&vq=hd1080';
         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
         iframe.allowFullscreen = true;
         iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
