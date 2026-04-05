@@ -923,7 +923,7 @@
         <div class="lp-nav__right">
             <a href="#lista-espera" class="btn btn-primary">Lista de Espera</a>
             <ul class="lp-nav__links">
-                <li><a href="#como-funciona">Como Funciona</a></li>
+                <li><a href="#robos">Como Funciona</a></li>
             </ul>
         </div>
     </div>
