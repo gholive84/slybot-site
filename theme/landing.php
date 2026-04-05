@@ -924,6 +924,7 @@
             <a href="#lista-espera" class="btn btn-primary">Lista de Espera</a>
             <ul class="lp-nav__links">
                 <li><a href="#robos">Como Funciona</a></li>
+                <li><a href="https://www.youtube.com/@slybot-trade" target="_blank" rel="noopener" aria-label="YouTube SlyBot" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg></a></li>
             </ul>
         </div>
     </div>
@@ -1337,7 +1338,7 @@
 <!-- ── Footer ───────────────────────────────────────────────────────────── -->
 <footer class="lp-footer">
     <div class="container">
-        <p>© <?php echo date('Y'); ?> SlyBot — Todos os direitos reservados &nbsp;·&nbsp; <a href="/politica-de-privacidade">Política de Privacidade</a> &nbsp;·&nbsp; <a href="/termos-de-uso">Termos de Uso</a></p>
+        <p>© <?php echo date('Y'); ?> SlyBot — Todos os direitos reservados &nbsp;·&nbsp; <a href="/politica-de-privacidade">Política de Privacidade</a> &nbsp;·&nbsp; <a href="/termos-de-uso">Termos de Uso</a> &nbsp;·&nbsp; <a href="https://www.youtube.com/@slybot-trade" target="_blank" rel="noopener">YouTube</a></p>
     </div>
 </footer>
 
