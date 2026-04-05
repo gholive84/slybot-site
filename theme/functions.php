@@ -18,6 +18,39 @@ define( 'HELLO_ELEMENTOR_CHILD_VERSION', '2.0.0' );
 
 
 /* =====================================================
+   SITEMAP XML — gerado via PHP, sem plugin
+===================================================== */
+
+add_action( 'init', function() {
+    add_rewrite_rule( '^sitemap\.xml$', 'index.php?slybot_sitemap=1', 'top' );
+} );
+
+add_filter( 'query_vars', function( $vars ) {
+    $vars[] = 'slybot_sitemap';
+    return $vars;
+} );
+
+add_action( 'template_redirect', function() {
+    if ( ! get_query_var( 'slybot_sitemap' ) ) return;
+
+    $home     = esc_url( home_url( '/' ) );
+    $modified = date( 'Y-m-d' );
+
+    header( 'Content-Type: application/xml; charset=UTF-8' );
+    echo '<?xml version="1.0" encoding="UTF-8"?>';
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    echo '<url>';
+    echo   '<loc>' . $home . '</loc>';
+    echo   '<lastmod>' . $modified . '</lastmod>';
+    echo   '<changefreq>weekly</changefreq>';
+    echo   '<priority>1.0</priority>';
+    echo '</url>';
+    echo '</urlset>';
+    exit;
+} );
+
+
+/* =====================================================
    ESTILOS DO CHILD THEME
 ===================================================== */
 
