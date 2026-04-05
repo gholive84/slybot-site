@@ -904,9 +904,9 @@
             <a href="#topo"><img src="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png" alt="SlyBot" loading="lazy"></a>
         </div>
         <div class="lp-nav__right">
-            <a href="#planos" class="btn btn-primary">Começar agora</a>
+            <a href="#lista-espera" class="btn btn-primary">Lista de Espera</a>
             <ul class="lp-nav__links">
-                <li><a href="#planos">Planos</a></li>
+                <li><a href="#lista-espera">Lista de Espera</a></li>
                 <li><a href="#como-funciona">Como Funciona</a></li>
             </ul>
         </div>
@@ -924,7 +924,7 @@
         <h1>Opere com <span>disciplina</span> e execução consistente</h1>
         <p class="lp-hero__sub">SlyBot é um robô automatizado para day trade no MT5, baseado em análise estatística e modelos estruturados. Sem promessas — apenas metodologia.</p>
         <div class="lp-hero__ctas">
-            <a href="#planos" class="btn btn-primary btn-lg">Ver planos</a>
+            <a href="#lista-espera" class="btn btn-primary btn-lg">Lista de Espera</a>
             <a href="#como-funciona" class="btn btn-outline btn-lg">Como funciona</a>
         </div>
         <div class="lp-hero__badges">
