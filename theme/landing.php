@@ -925,7 +925,7 @@
         <p class="lp-hero__sub">SlyBot é um robô automatizado para day trade no MT5, baseado em análise estatística e modelos estruturados. Sem promessas — apenas metodologia.</p>
         <div class="lp-hero__ctas">
             <a href="#lista-espera" class="btn btn-primary btn-lg">Lista de Espera</a>
-            <a href="#como-funciona" class="btn btn-outline btn-lg">Como funciona</a>
+            <a href="#robos" class="btn btn-outline btn-lg">Como funciona</a>
         </div>
         <div class="lp-hero__badges">
             <span class="lp-hero__badge">
