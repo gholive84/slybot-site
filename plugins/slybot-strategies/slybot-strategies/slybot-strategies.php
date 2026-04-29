@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: Slybot Strategies
-Description: Painel de estratégias com backtest, simulador por lote/capital e filtro por ativo.
-Version: 2.0
+Description: Painel de estratégias com backtest, filtro por ativo e robô.
+Version: 3.0
 Author: Slybot
 */
 
@@ -33,12 +33,34 @@ add_action('init', function() {
 
 
 /* =====================================
-   REGISTRAR TAXONOMIA: ATIVO
+   TAXONOMIA: ATIVO
 ===================================== */
 
 add_action('init', function() {
     register_taxonomy('slybot_asset', 'slybot_strategy', [
         'label'             => 'Ativos',
+        'hierarchical'      => false,
+        'public'            => false,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'rewrite'           => false,
+    ]);
+});
+
+
+/* =====================================
+   TAXONOMIA: ROBÔ
+===================================== */
+
+add_action('init', function() {
+    register_taxonomy('slybot_robot', 'slybot_strategy', [
+        'label'             => 'Robôs',
+        'labels'            => [
+            'name'          => 'Robôs',
+            'singular_name' => 'Robô',
+            'add_new_item'  => 'Adicionar Robô',
+            'edit_item'     => 'Editar Robô',
+        ],
         'hierarchical'      => false,
         'public'            => false,
         'show_ui'           => true,
@@ -353,7 +375,6 @@ add_action('save_post_slybot_strategy', function($post_id) {
         }
     }
 
-    // Calculados
     $total = intval($_POST['total_trades'] ?? 0);
     $wins  = intval($_POST['win_count'] ?? 0);
     update_post_meta($post_id, 'win_rate',   $total > 0 ? round(($wins / $total) * 100, 1) : 0);
@@ -400,12 +421,78 @@ function slybot_strategies_content() {
         return;
     }
 
-    /* --- FILTRO ATIVO --- */
+    /* --- PARÂMETROS DE FILTRO --- */
     $selected_asset = isset($_GET['ativo']) ? sanitize_text_field($_GET['ativo']) : '';
+    $selected_robot = isset($_GET['robo'])  ? sanitize_text_field($_GET['robo'])  : '';
     $sort_by        = isset($_GET['sort'])  ? sanitize_text_field($_GET['sort'])  : 'win_rate';
     $base_url       = wc_get_account_endpoint_url('estrategias-slybot');
 
     $assets = get_terms(['taxonomy' => 'slybot_asset', 'orderby' => 'name', 'hide_empty' => true]);
+    $robots = get_terms(['taxonomy' => 'slybot_robot', 'orderby' => 'name', 'hide_empty' => true]);
+
+    /* --- AVISO DE CAPITAL MÍNIMO --- */
+    echo "
+    <div class='slybot-capital-notice'>
+        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'
+             fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+            <circle cx='12' cy='12' r='10'/><line x1='12' y1='8' x2='12' y2='12'/><line x1='12' y1='16' x2='12.01' y2='16'/>
+        </svg>
+        Estratégias calibradas para <strong>capital mínimo de R$&nbsp;10.000</strong>. Os resultados exibidos são referentes ao lote padrão para esse capital.
+    </div>";
+
+    /* --- FILTROS --- */
+    echo "<div class='slybot-filters-wrap'>";
+
+    // Filtro por Ativo
+    echo "<div class='slybot-filter-group'>";
+    echo "<span class='slybot-filter-label'>Ativo</span>";
+    echo "<div class='slybot-filter-pills'>";
+    $active_all = (!$selected_asset) ? 'active' : '';
+    $url_all = add_query_arg(['sort' => $sort_by, 'robo' => $selected_robot], $base_url);
+    echo "<a href='" . esc_url($url_all) . "' class='slybot-filter-btn {$active_all}'>Todos</a>";
+    if (!empty($assets) && !is_wp_error($assets)) {
+        foreach ($assets as $asset) {
+            $active = ($selected_asset === $asset->slug) ? 'active' : '';
+            $url    = add_query_arg(['ativo' => $asset->slug, 'sort' => $sort_by, 'robo' => $selected_robot], $base_url);
+            echo "<a href='" . esc_url($url) . "' class='slybot-filter-btn {$active}'>" . esc_html($asset->name) . "</a>";
+        }
+    }
+    echo "</div></div>";
+
+    // Filtro por Robô
+    if (!empty($robots) && !is_wp_error($robots)) {
+        echo "<div class='slybot-filter-group'>";
+        echo "<span class='slybot-filter-label'>Robô</span>";
+        echo "<div class='slybot-filter-pills'>";
+        $active_all_r = (!$selected_robot) ? 'active' : '';
+        $url_all_r = add_query_arg(['sort' => $sort_by, 'ativo' => $selected_asset], $base_url);
+        echo "<a href='" . esc_url($url_all_r) . "' class='slybot-filter-btn {$active_all_r}'>Todos</a>";
+        foreach ($robots as $robot) {
+            $active = ($selected_robot === $robot->slug) ? 'active' : '';
+            $url    = add_query_arg(['robo' => $robot->slug, 'sort' => $sort_by, 'ativo' => $selected_asset], $base_url);
+            echo "<a href='" . esc_url($url) . "' class='slybot-filter-btn {$active}'>" . esc_html($robot->name) . "</a>";
+        }
+        echo "</div></div>";
+    }
+
+    echo "</div>"; // .slybot-filters-wrap
+
+    /* --- ORDENAÇÃO --- */
+    $sort_options = [
+        'win_rate'              => '% Acerto',
+        'profit_per_trade_base' => 'Lucro/Trade',
+        'total_profit_base'     => 'Lucro Total',
+        'max_drawdown_pct'      => 'Drawdown',
+    ];
+
+    echo "<div class='slybot-sort-bar'>";
+    echo "<span class='slybot-sort-label'>Ordenar por:</span>";
+    foreach ($sort_options as $key => $label) {
+        $active = ($sort_by === $key) ? 'active' : '';
+        $url    = add_query_arg(['sort' => $key, 'ativo' => $selected_asset, 'robo' => $selected_robot], $base_url);
+        echo "<a href='" . esc_url($url) . "' class='slybot-sort-btn {$active}'>{$label}</a>";
+    }
+    echo "</div>";
 
     /* --- QUERY --- */
     $query_args = [
@@ -417,230 +504,148 @@ function slybot_strategies_content() {
         'order'          => 'DESC',
     ];
 
+    $tax_queries = [];
     if ($selected_asset) {
-        $query_args['tax_query'] = [[
-            'taxonomy' => 'slybot_asset',
-            'field'    => 'slug',
-            'terms'    => $selected_asset,
-        ]];
+        $tax_queries[] = ['taxonomy' => 'slybot_asset', 'field' => 'slug', 'terms' => $selected_asset];
+    }
+    if ($selected_robot) {
+        $tax_queries[] = ['taxonomy' => 'slybot_robot', 'field' => 'slug', 'terms' => $selected_robot];
+    }
+    if (!empty($tax_queries)) {
+        $query_args['tax_query'] = array_merge(['relation' => 'AND'], $tax_queries);
     }
 
     $strategies = get_posts($query_args);
 
-    /* --- FILTROS POR ATIVO --- */
-    echo "<div class='slybot-strat-filters'>";
-    $active_all = !$selected_asset ? 'active' : '';
-    echo "<a href='" . esc_url(add_query_arg('sort', $sort_by, $base_url)) . "' class='slybot-filter-btn {$active_all}'>Todos</a>";
-
-    if (!empty($assets) && !is_wp_error($assets)) {
-        foreach ($assets as $asset) {
-            $active = ($selected_asset === $asset->slug) ? 'active' : '';
-            $url    = add_query_arg(['ativo' => $asset->slug, 'sort' => $sort_by], $base_url);
-            echo "<a href='" . esc_url($url) . "' class='slybot-filter-btn {$active}'>" . esc_html($asset->name) . "</a>";
-        }
-    }
-    echo "</div>";
-
-    /* --- SIMULADOR --- */
-    echo "
-    <div class='slybot-simulator'>
-        <div class='slybot-sim-field'>
-            <label>Capital (R$)</label>
-            <input type='number' id='sim-capital' value='10000' min='1' step='100'>
-        </div>
-        <div class='slybot-sim-hint'>
-            Altere o capital para simular os resultados proporcionalmente.<br>
-            O lote pode ser ajustado individualmente em cada estratégia.
-        </div>
-    </div>";
-
-    /* --- ORDENAÇÃO --- */
-    $sort_options = [
-        'win_rate'             => '% Acerto',
-        'profit_per_trade_base'=> 'Lucro/Trade',
-        'total_profit_base'    => 'Lucro Total',
-        'max_drawdown_pct'     => 'Drawdown',
-    ];
-
-    echo "<div class='slybot-sort-bar'>";
-    echo "<span class='slybot-sort-label'>Ordenar por:</span>";
-    foreach ($sort_options as $key => $label) {
-        $active = ($sort_by === $key) ? 'active' : '';
-        $url    = add_query_arg(['sort' => $key, 'ativo' => $selected_asset], $base_url);
-        echo "<a href='" . esc_url($url) . "' class='slybot-sort-btn {$active}'>{$label}</a>";
-    }
-    echo "</div>";
-
-    /* --- TABELA --- */
+    /* --- CARDS --- */
     if (empty($strategies)) {
-        echo "<div class='slybot-strat-empty'>Nenhuma estratégia disponível no momento.</div>";
+        echo "<div class='slybot-strat-empty'>Nenhuma estratégia encontrada para os filtros selecionados.</div>";
         return;
     }
 
-    echo "<div class='slybot-strat-table-wrap'>";
-    echo "<table class='slybot-strat-table' id='strat-table'>";
-    echo "<thead><tr>
-            <th>Ativo</th>
-            <th>Estratégia</th>
-            <th>Tipo</th>
-            <th>Período</th>
-            <th>Trades</th>
-            <th>Acerto</th>
-            <th>Fator Lucro</th>
-            <th>Meses +</th>
-            <th>Lote</th>
-            <th>Drawdown</th>
-            <th>Lucro/Trade</th>
-            <th>Lucro Total</th>
-            <th>Curva</th>
-            <th>Arquivo</th>
-          </tr></thead><tbody>";
+    echo "<div class='slybot-strat-grid'>";
 
     foreach ($strategies as $strategy) {
 
         $m   = get_post_meta($strategy->ID);
         $get = fn($k) => $m[$k][0] ?? '';
 
-        $asset_terms  = wp_get_post_terms($strategy->ID, 'slybot_asset');
-        $asset_name   = !empty($asset_terms) && !is_wp_error($asset_terms) ? esc_html($asset_terms[0]->name) : '—';
-        $asset_slug   = !empty($asset_terms) && !is_wp_error($asset_terms) ? $asset_terms[0]->slug : '';
+        // Taxonomias
+        $asset_terms = wp_get_post_terms($strategy->ID, 'slybot_asset');
+        $asset_name  = !empty($asset_terms) && !is_wp_error($asset_terms) ? esc_html($asset_terms[0]->name) : '';
 
-        $type         = $get('strategy_type') ?: '—';
-        $date_start   = $get('date_start') ? date('m/Y', strtotime($get('date_start'))) : '—';
-        $date_end     = $get('date_end')   ? date('m/Y', strtotime($get('date_end')))   : '—';
-        $period       = "{$date_start} – {$date_end}";
-        $total        = $get('total_trades') ?: '—';
-        $win_rate     = $get('win_rate') !== '' ? floatval($get('win_rate')) : 0;
-        $wins         = intval($get('win_count'));
-        $losses       = intval($get('loss_count'));
-        $pf           = $get('profit_factor') ?: '—';
-        $pos_months   = $get('positive_months') ?: '—';
-        $notes        = $get('admin_notes');
+        $robot_terms = wp_get_post_terms($strategy->ID, 'slybot_robot');
+        $robot_name  = !empty($robot_terms) && !is_wp_error($robot_terms) ? esc_html($robot_terms[0]->name) : '';
 
-        // Lote base — futuros ou ações
-        $base_lot_futures     = floatval($get('base_lot_futures'));
-        $base_lot_stocks      = floatval($get('base_lot_stocks'));
-        $is_stocks            = $base_lot_stocks > 0;
-        $base_lot             = $is_stocks ? $base_lot_stocks : ($base_lot_futures ?: 1);
-        $lot_step             = $is_stocks ? 100 : 1;
-        $lot_label            = $is_stocks ? 'mín: ' . intval($base_lot) : 'mín: ' . intval($base_lot);
-        $max_dd_pct           = floatval($get('max_drawdown_pct'));
-        $profit_per_trade_base= floatval($get('profit_per_trade_base'));
-        $total_profit_base    = floatval($get('total_profit_base'));
+        // Dados
+        $type       = $get('strategy_type') ?: '';
+        $date_start = $get('date_start') ? date('M/Y', strtotime($get('date_start'))) : '';
+        $date_end   = $get('date_end')   ? date('M/Y', strtotime($get('date_end')))   : '';
+        $period     = ($date_start && $date_end) ? "{$date_start} – {$date_end}" : '';
+        $total      = $get('total_trades') ? intval($get('total_trades')) : 0;
+        $win_rate   = $get('win_rate') !== '' ? floatval($get('win_rate')) : 0;
+        $wins       = intval($get('win_count'));
+        $losses     = intval($get('loss_count'));
+        $pf         = $get('profit_factor') ? floatval($get('profit_factor')) : 0;
+        $pos_months = $get('positive_months') ?: '—';
+        $dd_pct     = $get('max_drawdown_pct') ? floatval($get('max_drawdown_pct')) : 0;
+        $ppt        = $get('profit_per_trade_base') ? floatval($get('profit_per_trade_base')) : 0;
+        $tot_profit = $get('total_profit_base') ? floatval($get('total_profit_base')) : 0;
+        $notes      = $get('admin_notes');
+
+        // Lote
+        $base_lot_futures = floatval($get('base_lot_futures'));
+        $base_lot_stocks  = floatval($get('base_lot_stocks'));
+        $is_stocks        = $base_lot_stocks > 0;
+        $base_lot         = $is_stocks ? intval($base_lot_stocks) : intval($base_lot_futures ?: 1);
+        $lot_label        = $is_stocks ? $base_lot . ' ações' : $base_lot . ' contrato' . ($base_lot > 1 ? 's' : '');
 
         // Curva
-        $equity_html = '—';
+        $equity_html = '';
         if ($get('equity_curve_id')) {
-            $img  = wp_get_attachment_image_url($get('equity_curve_id'), 'thumbnail');
+            $img  = wp_get_attachment_image_url($get('equity_curve_id'), 'medium');
             $full = wp_get_attachment_image_url($get('equity_curve_id'), 'full');
-            if ($img) $equity_html = "<a href='" . esc_url($full) . "' target='_blank'><img src='" . esc_url($img) . "' class='slybot-curve-thumb'></a>";
+            if ($img) $equity_html = "<a href='" . esc_url($full) . "' target='_blank' class='slybot-card-curve-link'><img src='" . esc_url($img) . "' class='slybot-curve-thumb' alt='Curva de Capital'></a>";
         }
 
         // Arquivo
-        $file_html = '—';
+        $file_html = '';
         if ($get('strategy_file_id')) {
             $file_url  = wp_get_attachment_url($get('strategy_file_id'));
             $file_html = "<a href='" . esc_url($file_url) . "' class='slybot-download-btn' download>
                 <svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24'
-                     fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                     fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'>
                     <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/>
                     <polyline points='7 10 12 15 17 10'/><line x1='12' y1='15' x2='12' y2='3'/>
                 </svg> Baixar</a>";
         }
 
-        echo "<tr
-            data-base-lot='{$base_lot}'
-            data-dd-pct='{$max_dd_pct}'
-            data-ppt='{$profit_per_trade_base}'
-            data-total-profit='{$total_profit_base}'>";
+        // Formatação de valores
+        $fmt_ppt    = $ppt    ? 'R$ ' . number_format($ppt, 2, ',', '.') : '—';
+        $fmt_profit = $tot_profit ? 'R$ ' . number_format($tot_profit, 2, ',', '.') : '—';
+        $fmt_dd     = $dd_pct ? number_format($dd_pct, 1, ',', '.') . '%' : '—';
+        $fmt_pf     = $pf     ? number_format($pf, 2, ',', '.') : '—';
+        $fmt_trades = $total  ? $total : '—';
 
-        echo "<td><span class='slybot-asset-tag'>{$asset_name}</span></td>";
-        echo "<td>
-                <div class='slybot-strat-name'>" . esc_html($strategy->post_title) . "</div>"
-             . ($notes ? "<div class='slybot-strat-notes'>" . esc_html($notes) . "</div>" : "")
-             . "</td>";
-        echo "<td>{$type}</td>";
-        echo "<td style='white-space:nowrap;font-size:12px'>{$period}</td>";
-        echo "<td style='text-align:center'>{$total}</td>";
-        echo "<td>
-                <div class='slybot-winrate'>{$win_rate}%</div>
-                <div class='slybot-wl'>{$wins}G / {$losses}L</div>
-              </td>";
-        echo "<td style='text-align:center;font-weight:600'>{$pf}</td>";
-        echo "<td style='text-align:center'>{$pos_months}</td>";
+        echo "<div class='slybot-card'>";
 
-        // Input de lote por linha — step e min corretos por tipo
-        echo "<td style='text-align:center'>
-                <input type='number'
-                       class='slybot-lot-input'
-                       value='{$base_lot}'
-                       min='{$base_lot}'
-                       step='{$lot_step}'
-                       style='width:72px;padding:6px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;font-weight:600;text-align:center'>
-                <div style='font-size:10px;color:#9ca3af;margin-top:3px'>{$lot_label}</div>
-              </td>";
+        // Header do card
+        echo "<div class='slybot-card-header'>";
+        echo "<div class='slybot-card-tags'>";
+        if ($asset_name) echo "<span class='slybot-tag slybot-tag-asset'>{$asset_name}</span>";
+        if ($robot_name) echo "<span class='slybot-tag slybot-tag-robot'>{$robot_name}</span>";
+        echo "</div>";
+        if ($type) echo "<span class='slybot-card-type'>{$type}</span>";
+        echo "</div>";
 
-        // Células calculadas pelo JS
-        echo "<td class='slybot-calc' data-field='dd' style='text-align:center'>—</td>";
-        echo "<td class='slybot-calc' data-field='ppt' style='text-align:center'>—</td>";
-        echo "<td class='slybot-calc' data-field='total' style='text-align:center'>—</td>";
+        // Corpo
+        echo "<div class='slybot-card-body'>";
+        echo "<h3 class='slybot-card-title'>" . esc_html($strategy->post_title) . "</h3>";
 
-        echo "<td style='text-align:center'>{$equity_html}</td>";
-        echo "<td style='text-align:center'>{$file_html}</td>";
-        echo "</tr>";
+        // Métrica principal — win rate
+        echo "<div class='slybot-card-metrics'>";
+        echo "<div class='slybot-metric-main'>
+                <div class='slybot-metric-big'>{$win_rate}%</div>
+                <div class='slybot-metric-big-label'>Taxa de Acerto</div>
+                <div class='slybot-metric-wl'>{$wins}G &nbsp;/&nbsp; {$losses}L</div>
+              </div>";
+
+        // Métricas secundárias
+        echo "<div class='slybot-metrics-grid'>";
+        echo "<div class='slybot-metric'><div class='slybot-metric-val'>{$fmt_pf}</div><div class='slybot-metric-lbl'>Fator Lucro</div></div>";
+        echo "<div class='slybot-metric'><div class='slybot-metric-val'>{$pos_months}</div><div class='slybot-metric-lbl'>Meses +</div></div>";
+        echo "<div class='slybot-metric slybot-metric-danger'><div class='slybot-metric-val'>{$fmt_dd}</div><div class='slybot-metric-lbl'>Drawdown</div></div>";
+        echo "<div class='slybot-metric'><div class='slybot-metric-val'>{$fmt_ppt}</div><div class='slybot-metric-lbl'>Lucro/Trade</div></div>";
+        echo "<div class='slybot-metric slybot-metric-profit'><div class='slybot-metric-val'>{$fmt_profit}</div><div class='slybot-metric-lbl'>Lucro Total</div></div>";
+        echo "<div class='slybot-metric'><div class='slybot-metric-val'>{$fmt_trades}</div><div class='slybot-metric-lbl'>Trades</div></div>";
+        echo "</div>"; // .slybot-metrics-grid
+        echo "</div>"; // .slybot-card-metrics
+
+        // Período e lote
+        echo "<div class='slybot-card-info'>";
+        if ($period)    echo "<span class='slybot-card-info-item'>📅 {$period}</span>";
+        echo "<span class='slybot-card-info-item'>📦 Lote: {$lot_label}</span>";
+        echo "</div>";
+
+        // Comentários
+        if ($notes) {
+            echo "<div class='slybot-card-notes'>" . esc_html($notes) . "</div>";
+        }
+
+        echo "</div>"; // .slybot-card-body
+
+        // Footer — curva + download
+        if ($equity_html || $file_html) {
+            echo "<div class='slybot-card-footer'>";
+            echo "<div class='slybot-card-footer-left'>{$equity_html}</div>";
+            echo "<div class='slybot-card-footer-right'>{$file_html}</div>";
+            echo "</div>";
+        }
+
+        echo "</div>"; // .slybot-card
     }
 
-    echo "</tbody></table></div>";
-
-    /* --- JAVASCRIPT SIMULADOR --- */
-    echo "
-    <script>
-    (function() {
-        function fmt(v) {
-            return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function calcRow(row) {
-            var capital  = parseFloat(document.getElementById('sim-capital').value) || 10000;
-            var baseLot  = parseFloat(row.dataset.baseLot)     || 1;
-            var lotInput = row.querySelector('.slybot-lot-input');
-            var lot      = lotInput ? (parseFloat(lotInput.value) || baseLot) : baseLot;
-
-            var ddPct    = parseFloat(row.dataset.ddPct)       || 0;
-            var pptBase  = parseFloat(row.dataset.ppt)         || 0;
-            var totBase  = parseFloat(row.dataset.totalProfit) || 0;
-
-            var lotFactor   = lot / baseLot;
-            var ddVal       = (ddPct / 100) * capital;
-            var ppt         = pptBase * lotFactor;
-            var totalProfit = totBase * lotFactor;
-            var totalPct    = capital > 0 ? (totalProfit / capital) * 100 : 0;
-
-            row.querySelectorAll('.slybot-calc').forEach(function(cell) {
-                var f = cell.dataset.field;
-                if (f === 'dd')    cell.innerHTML = '<span style=\"color:#e74c3c;font-weight:600\">' + fmt(ddVal) + '</span><div style=\"font-size:11px;color:#9ca3af\">' + ddPct.toFixed(1) + '%</div>';
-                if (f === 'ppt')   cell.innerHTML = fmt(ppt);
-                if (f === 'total') cell.innerHTML = '<span style=\"font-weight:700;color:#16a34a\">' + fmt(totalProfit) + '</span><div style=\"font-size:11px;color:#9ca3af\">' + totalPct.toFixed(1) + '%</div>';
-            });
-        }
-
-        function calcAll() {
-            document.querySelectorAll('#strat-table tbody tr').forEach(calcRow);
-        }
-
-        // Capital global recalcula todas as linhas
-        document.getElementById('sim-capital').addEventListener('input', calcAll);
-
-        // Lote individual recalcula só a linha
-        document.addEventListener('input', function(e) {
-            if (e.target.classList.contains('slybot-lot-input')) {
-                calcRow(e.target.closest('tr'));
-            }
-        });
-
-        calcAll();
-    })();
-    </script>";
+    echo "</div>"; // .slybot-strat-grid
 }
 
 
@@ -654,31 +659,34 @@ function slybot_strategies_styles() {
     if (!is_account_page()) return;
     ?>
     <style>
-    /* Simulador */
-    .slybot-simulator {
+    /* Capital mínimo */
+    .slybot-capital-notice {
         display: flex;
-        align-items: flex-end;
-        gap: 20px;
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 20px 24px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        background: #fff8f0;
+        border: 1px solid #fed7aa;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #92400e;
+        line-height: 1.5;
     }
-    .slybot-sim-field { display: flex; flex-direction: column; gap: 6px; }
-    .slybot-sim-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #6b7280; }
-    .slybot-sim-field input {
-        padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px;
-        font-size: 15px; font-weight: 600; width: 160px;
-    }
-    .slybot-sim-hint { font-size: 12px; color: #9ca3af; align-self: flex-end; padding-bottom: 4px; }
+    .slybot-capital-notice svg { flex-shrink: 0; color: #ff6a00; }
+    .slybot-capital-notice strong { color: #c2410c; }
 
     /* Filtros */
-    .slybot-strat-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .slybot-filters-wrap { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .slybot-filter-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .slybot-filter-label {
+        font-size: 11px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .5px; color: #9ca3af; white-space: nowrap; min-width: 36px;
+    }
+    .slybot-filter-pills { display: flex; flex-wrap: wrap; gap: 6px; }
     .slybot-filter-btn {
-        padding: 7px 16px; border-radius: 30px; border: 1px solid #e5e7eb;
-        background: #fff; color: #374151; font-size: 13px; font-weight: 500;
+        padding: 6px 14px; border-radius: 30px; border: 1px solid #e5e7eb;
+        background: #fff; color: #374151; font-size: 12px; font-weight: 500;
         text-decoration: none; transition: all .2s;
     }
     .slybot-filter-btn:hover, .slybot-filter-btn.active {
@@ -686,8 +694,8 @@ function slybot_strategies_styles() {
     }
 
     /* Ordenação */
-    .slybot-sort-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-    .slybot-sort-label { font-size: 12px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+    .slybot-sort-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .slybot-sort-label { font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
     .slybot-sort-btn {
         padding: 5px 14px; border-radius: 6px; border: 1px solid #e5e7eb;
         background: #f9fafb; color: #374151; font-size: 12px; font-weight: 500;
@@ -697,38 +705,122 @@ function slybot_strategies_styles() {
         background: #111827; border-color: #111827; color: #fff !important;
     }
 
-    /* Tabela */
-    .slybot-strat-table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid #e5e7eb; background: #fff; }
-    .slybot-strat-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .slybot-strat-table thead { background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
-    .slybot-strat-table th {
-        padding: 12px 14px; text-align: left; font-size: 11px; font-weight: 700;
-        text-transform: uppercase; letter-spacing: .5px; color: #9ca3af; white-space: nowrap;
+    /* Grid de cards */
+    .slybot-strat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
     }
-    .slybot-strat-table td { padding: 14px; border-top: 1px solid #f3f4f6; color: #374151; vertical-align: middle; }
-    .slybot-strat-table tbody tr:hover { background: #fafafa; }
 
-    .slybot-strat-name { font-weight: 600; font-size: 14px; color: #111827; margin-bottom: 4px; }
-    .slybot-strat-notes { font-size: 12px; color: #6b7280; line-height: 1.5; max-width: 240px; }
-    .slybot-asset-tag {
+    /* Card */
+    .slybot-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow .2s, transform .2s;
+    }
+    .slybot-card:hover {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+        transform: translateY(-2px);
+    }
+
+    /* Header do card */
+    .slybot-card-header {
+        background: #0f172a;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .slybot-card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .slybot-tag {
         display: inline-block; padding: 3px 10px; border-radius: 20px;
-        background: #fff3eb; color: #ff6a00; font-size: 11px; font-weight: 700;
+        font-size: 11px; font-weight: 700; letter-spacing: .3px;
     }
-    .slybot-winrate { font-weight: 700; color: #16a34a; font-size: 14px; }
-    .slybot-wl { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+    .slybot-tag-asset { background: rgba(255,106,0,.15); color: #ff6a00; border: 1px solid rgba(255,106,0,.3); }
+    .slybot-tag-robot { background: rgba(99,102,241,.15); color: #818cf8; border: 1px solid rgba(99,102,241,.3); }
+    .slybot-card-type {
+        font-size: 10px; font-weight: 600; text-transform: uppercase;
+        letter-spacing: .5px; color: #64748b; white-space: nowrap;
+    }
+
+    /* Corpo */
+    .slybot-card-body { padding: 18px 16px 14px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+    .slybot-card-title { font-size: 15px; font-weight: 700; color: #111827; margin: 0; line-height: 1.3; }
+
+    /* Métricas */
+    .slybot-card-metrics { display: flex; gap: 12px; align-items: flex-start; }
+    .slybot-metric-main {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border-radius: 12px;
+        padding: 12px 14px;
+        text-align: center;
+        min-width: 88px;
+        flex-shrink: 0;
+    }
+    .slybot-metric-big { font-size: 22px; font-weight: 800; color: #4ade80; line-height: 1; }
+    .slybot-metric-big-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: #64748b; margin-top: 4px; }
+    .slybot-metric-wl { font-size: 10px; color: #94a3b8; margin-top: 5px; }
+
+    .slybot-metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        flex: 1;
+    }
+    .slybot-metric {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 7px 8px;
+        text-align: center;
+    }
+    .slybot-metric-val { font-size: 12px; font-weight: 700; color: #111827; line-height: 1.2; }
+    .slybot-metric-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; color: #9ca3af; margin-top: 2px; }
+    .slybot-metric-danger .slybot-metric-val { color: #ef4444; }
+    .slybot-metric-profit .slybot-metric-val { color: #16a34a; }
+
+    /* Info (período + lote) */
+    .slybot-card-info { display: flex; gap: 12px; flex-wrap: wrap; }
+    .slybot-card-info-item { font-size: 11px; color: #6b7280; }
+
+    /* Notas */
+    .slybot-card-notes {
+        font-size: 12px; color: #6b7280; line-height: 1.5;
+        border-left: 3px solid #ff6a00; padding-left: 10px;
+        background: #fff8f0; border-radius: 0 6px 6px 0; padding: 8px 10px 8px 12px;
+    }
+
+    /* Footer */
+    .slybot-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-top: 1px solid #f3f4f6;
+        gap: 10px;
+    }
+    .slybot-card-footer-left {}
     .slybot-curve-thumb {
-        width: 60px; height: 38px; object-fit: cover; border-radius: 6px;
-        border: 1px solid #e5e7eb; cursor: pointer; transition: transform .2s;
+        width: 72px; height: 44px; object-fit: cover; border-radius: 6px;
+        border: 1px solid #e5e7eb; cursor: pointer;
+        transition: transform .2s, box-shadow .2s;
+        display: block;
     }
-    .slybot-curve-thumb:hover { transform: scale(1.1); }
+    .slybot-curve-thumb:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .slybot-download-btn {
-        display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px;
+        display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
         background: #f3f4f6; color: #374151 !important; border-radius: 8px;
         font-size: 12px; font-weight: 600; text-decoration: none; transition: all .2s; white-space: nowrap;
     }
     .slybot-download-btn:hover { background: #ff6a00; color: #fff !important; }
+
+    /* Empty */
     .slybot-strat-empty {
-        padding: 40px; text-align: center; color: #9ca3af; font-size: 15px;
+        padding: 48px; text-align: center; color: #9ca3af; font-size: 15px;
         background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
     }
 
@@ -747,9 +839,11 @@ function slybot_strategies_styles() {
     }
     .slybot-btn-primary:hover { background: #e55e00; }
 
-    @media (max-width: 768px) {
-        .slybot-simulator { flex-direction: column; }
-        .slybot-sim-field input { width: 100%; }
+    @media (max-width: 640px) {
+        .slybot-strat-grid { grid-template-columns: 1fr; }
+        .slybot-card-metrics { flex-direction: column; }
+        .slybot-metric-main { min-width: unset; width: 100%; }
+        .slybot-filter-group { flex-direction: column; align-items: flex-start; }
     }
     </style>
     <?php
