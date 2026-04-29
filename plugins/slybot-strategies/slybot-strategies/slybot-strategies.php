@@ -589,28 +589,31 @@ function slybot_strategies_content() {
 
         echo "<div class='slybot-card'>";
 
-        // Header do card
+        // Header do card — só tags (type vai para o corpo)
         echo "<div class='slybot-card-header'>";
-        echo "<div class='slybot-card-tags'>";
         if ($asset_name) echo "<span class='slybot-tag slybot-tag-asset'>{$asset_name}</span>";
         if ($robot_name) echo "<span class='slybot-tag slybot-tag-robot'>{$robot_name}</span>";
-        echo "</div>";
-        if ($type) echo "<span class='slybot-card-type'>{$type}</span>";
         echo "</div>";
 
         // Corpo
         echo "<div class='slybot-card-body'>";
-        echo "<h3 class='slybot-card-title'>" . esc_html($strategy->post_title) . "</h3>";
 
-        // Métrica principal — win rate
-        echo "<div class='slybot-card-metrics'>";
-        echo "<div class='slybot-metric-main'>
-                <div class='slybot-metric-big'>{$win_rate}%</div>
-                <div class='slybot-metric-big-label'>Taxa de Acerto</div>
-                <div class='slybot-metric-wl'>{$wins}G &nbsp;/&nbsp; {$losses}L</div>
+        // Título + tipo
+        echo "<div class='slybot-card-title-row'>";
+        echo "<h3 class='slybot-card-title'>" . esc_html($strategy->post_title) . "</h3>";
+        if ($type) echo "<span class='slybot-card-type'>{$type}</span>";
+        echo "</div>";
+
+        // Win rate — faixa hero full-width
+        echo "<div class='slybot-metric-hero'>
+                <div class='slybot-metric-hero-rate'>{$win_rate}%</div>
+                <div class='slybot-metric-hero-info'>
+                    <div class='slybot-metric-hero-label'>Taxa de Acerto</div>
+                    <div class='slybot-metric-hero-wl'>{$wins}G &nbsp;/&nbsp; {$losses}L</div>
+                </div>
               </div>";
 
-        // Métricas secundárias
+        // Métricas secundárias — grid 3 colunas full-width
         echo "<div class='slybot-metrics-grid'>";
         echo "<div class='slybot-metric'><div class='slybot-metric-val'>{$fmt_pf}</div><div class='slybot-metric-lbl'>Fator Lucro</div></div>";
         echo "<div class='slybot-metric'><div class='slybot-metric-val'>{$pos_months}</div><div class='slybot-metric-lbl'>Meses +</div></div>";
@@ -619,7 +622,6 @@ function slybot_strategies_content() {
         echo "<div class='slybot-metric slybot-metric-profit'><div class='slybot-metric-val'>{$fmt_profit}</div><div class='slybot-metric-lbl'>Lucro Total</div></div>";
         echo "<div class='slybot-metric'><div class='slybot-metric-val'>{$fmt_trades}</div><div class='slybot-metric-lbl'>Trades</div></div>";
         echo "</div>"; // .slybot-metrics-grid
-        echo "</div>"; // .slybot-card-metrics
 
         // Período e lote
         echo "<div class='slybot-card-info'>";
@@ -727,59 +729,57 @@ function slybot_strategies_styles() {
         transform: translateY(-2px);
     }
 
-    /* Header do card */
+    /* Header do card — só tags */
     .slybot-card-header {
         background: #0f172a;
-        padding: 14px 16px;
+        padding: 12px 16px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 8px;
+        gap: 6px;
+        flex-wrap: wrap;
     }
-    .slybot-card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
     .slybot-tag {
-        display: inline-block; padding: 3px 10px; border-radius: 20px;
-        font-size: 11px; font-weight: 700; letter-spacing: .3px;
+        display: inline-block; padding: 4px 11px; border-radius: 20px;
+        font-size: 11px; font-weight: 700; letter-spacing: .3px; white-space: nowrap;
     }
-    .slybot-tag-asset { background: rgba(255,106,0,.15); color: #ff6a00; border: 1px solid rgba(255,106,0,.3); }
-    .slybot-tag-robot { background: rgba(99,102,241,.15); color: #818cf8; border: 1px solid rgba(99,102,241,.3); }
-    .slybot-card-type {
-        font-size: 10px; font-weight: 600; text-transform: uppercase;
-        letter-spacing: .5px; color: #64748b; white-space: nowrap;
-    }
+    .slybot-tag-asset { background: rgba(255,106,0,.18); color: #ff6a00; border: 1px solid rgba(255,106,0,.35); }
+    .slybot-tag-robot { background: rgba(99,102,241,.18); color: #a5b4fc; border: 1px solid rgba(99,102,241,.35); }
 
     /* Corpo */
-    .slybot-card-body { padding: 18px 16px 14px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+    .slybot-card-body { padding: 16px 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+    /* Título + tipo */
+    .slybot-card-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .slybot-card-title { font-size: 15px; font-weight: 700; color: #111827; margin: 0; line-height: 1.3; }
+    .slybot-card-type { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: #9ca3af; white-space: nowrap; }
 
-    /* Métricas */
-    .slybot-card-metrics { display: flex; gap: 12px; align-items: flex-start; }
-    .slybot-metric-main {
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        border-radius: 12px;
-        padding: 12px 14px;
-        text-align: center;
-        min-width: 88px;
-        flex-shrink: 0;
+    /* Win rate — hero row full-width */
+    .slybot-metric-hero {
+        background: #0f172a;
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
     }
-    .slybot-metric-big { font-size: 22px; font-weight: 800; color: #4ade80; line-height: 1; }
-    .slybot-metric-big-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: #64748b; margin-top: 4px; }
-    .slybot-metric-wl { font-size: 10px; color: #94a3b8; margin-top: 5px; }
+    .slybot-metric-hero-rate { font-size: 30px; font-weight: 800; color: #4ade80; line-height: 1; flex-shrink: 0; }
+    .slybot-metric-hero-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #64748b; }
+    .slybot-metric-hero-wl { font-size: 12px; color: #94a3b8; margin-top: 4px; }
 
+    /* Grid de métricas secundárias — 3 colunas full-width */
     .slybot-metrics-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 6px;
-        flex: 1;
     }
     .slybot-metric {
         background: #f8fafc;
         border-radius: 8px;
-        padding: 7px 8px;
+        padding: 8px 6px;
         text-align: center;
     }
-    .slybot-metric-val { font-size: 12px; font-weight: 700; color: #111827; line-height: 1.2; }
-    .slybot-metric-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; color: #9ca3af; margin-top: 2px; }
+    .slybot-metric-val { font-size: 13px; font-weight: 700; color: #111827; line-height: 1.2; }
+    .slybot-metric-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; color: #9ca3af; margin-top: 3px; }
     .slybot-metric-danger .slybot-metric-val { color: #ef4444; }
     .slybot-metric-profit .slybot-metric-val { color: #16a34a; }
 
