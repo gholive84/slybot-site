@@ -756,30 +756,31 @@ function slybot_strategies_styles() {
     /* Win rate — hero row full-width */
     .slybot-metric-hero {
         background: #0f172a;
-        border-radius: 10px;
-        padding: 12px 16px;
+        border-radius: 12px;
+        padding: 16px 20px;
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 18px;
     }
-    .slybot-metric-hero-rate { font-size: 30px; font-weight: 800; color: #4ade80; line-height: 1; flex-shrink: 0; }
-    .slybot-metric-hero-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #64748b; }
-    .slybot-metric-hero-wl { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .slybot-metric-hero-rate { font-size: 40px; font-weight: 800; color: #4ade80; line-height: 1; flex-shrink: 0; }
+    .slybot-metric-hero-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #94a3b8; }
+    .slybot-metric-hero-wl { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-top: 6px; }
 
-    /* Grid de métricas secundárias — 3 colunas full-width */
+    /* Grid de métricas secundárias — 2 colunas */
     .slybot-metrics-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
     .slybot-metric {
         background: #f8fafc;
-        border-radius: 8px;
-        padding: 8px 6px;
+        border: 1px solid #f1f5f9;
+        border-radius: 10px;
+        padding: 10px 12px;
         text-align: center;
     }
-    .slybot-metric-val { font-size: 13px; font-weight: 700; color: #111827; line-height: 1.2; }
-    .slybot-metric-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; color: #9ca3af; margin-top: 3px; }
+    .slybot-metric-val { font-size: 15px; font-weight: 700; color: #111827; line-height: 1.2; white-space: nowrap; }
+    .slybot-metric-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; color: #9ca3af; margin-top: 4px; }
     .slybot-metric-danger .slybot-metric-val { color: #ef4444; }
     .slybot-metric-profit .slybot-metric-val { color: #16a34a; }
 
