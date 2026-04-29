@@ -37,6 +37,10 @@ case 'curso-slybot':
 echo '<i class="fa-solid fa-graduation-cap slybot-icon"></i>';
 break;
 
+case 'estrategias-slybot':
+echo '<i class="fa-solid fa-chart-line slybot-icon"></i>';
+break;
+
 case 'edit-account':
 echo '<i class="fa-solid fa-gear slybot-icon"></i>';
 break;
