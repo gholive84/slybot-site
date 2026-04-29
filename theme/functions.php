@@ -631,6 +631,22 @@ function slybot_access_styles() {
 
 
 /* =====================================================
+   CHECKOUT — REMOVER CAMPOS DE ENDEREÇO E NOTAS
+===================================================== */
+
+add_filter('woocommerce_checkout_fields', function($fields) {
+    $remove = ['billing_company', 'billing_address_1', 'billing_address_2',
+               'billing_city', 'billing_state', 'billing_postcode', 'billing_country'];
+    foreach ($remove as $key) {
+        unset($fields['billing'][$key]);
+    }
+    return $fields;
+});
+
+add_filter('woocommerce_enable_order_notes_field', '__return_false');
+
+
+/* =====================================================
    CHECKOUT — ESTILO MODERNO
 ===================================================== */
 
@@ -641,29 +657,28 @@ add_action('wp_head', function() {
     /* ── Layout geral ── */
     .woocommerce-checkout .woocommerce,
     .woocommerce-page .woocommerce {
-        max-width: 1100px !important;
+        max-width: 1060px !important;
         margin: 0 auto !important;
         padding: 40px 24px 60px !important;
     }
 
-    /* Grid de 2 colunas: form | resumo */
+    /* Grid 2 colunas com template areas */
     form.woocommerce-checkout {
         display: grid !important;
-        grid-template-columns: 1fr 400px !important;
-        grid-template-rows: auto !important;
+        grid-template-columns: 1fr 380px !important;
+        grid-template-areas: "customer review" !important;
         gap: 28px !important;
         align-items: start !important;
     }
-    #customer_details     { grid-column: 1; grid-row: 1; }
-    #order_review_heading { grid-column: 2; grid-row: 1; margin: 0 !important; }
-    #order_review         { grid-column: 2; grid-row: 2; margin-top: -4px !important; }
+    #customer_details     { grid-area: customer; }
+    #order_review_heading { display: none !important; }
+    #order_review         { grid-area: review; }
 
     @media (max-width: 860px) {
         form.woocommerce-checkout {
             grid-template-columns: 1fr !important;
+            grid-template-areas: "customer" "review" !important;
         }
-        #order_review_heading { grid-column: 1; grid-row: 3; }
-        #order_review         { grid-column: 1; grid-row: 4; }
     }
 
     /* ── Remove colunas internas do WC ── */
