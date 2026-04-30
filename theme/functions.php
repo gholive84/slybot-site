@@ -821,49 +821,163 @@ add_action('wp_head', function() {
         margin: 0 !important;
         border-radius: 0 0 16px 16px !important;
     }
+
+    /* Tabs de método de pagamento */
     #payment .payment_methods {
+        display: flex !important;
+        gap: 10px !important;
         list-style: none !important;
         padding: 0 !important;
-        margin: 0 0 16px !important;
+        margin: 0 0 20px !important;
+        flex-wrap: wrap !important;
     }
     #payment .payment_methods li {
-        background: #fff !important;
+        flex: 1 !important;
+        min-width: 120px !important;
         border: 1.5px solid #e5e7eb !important;
         border-radius: 10px !important;
-        padding: 14px 16px !important;
-        margin-bottom: 8px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #fff !important;
         cursor: pointer !important;
-        transition: border-color .2s !important;
+        transition: all .2s !important;
+        overflow: hidden !important;
     }
-    #payment .payment_methods li.payment_method_asaas,
     #payment .payment_methods li:has(input[type=radio]:checked) {
-        border-color: #ff6a00 !important;
-        background: #fff8f0 !important;
-    }
-    #payment .payment_methods .payment_box {
-        background: transparent !important;
-        border: none !important;
-        padding: 10px 0 0 26px !important;
-        font-size: 13px !important;
-        color: #6b7280 !important;
-    }
-    #payment .payment_methods .payment_box::before { display: none !important; }
-    #payment .payment_methods label {
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        color: #111827 !important;
-        cursor: pointer !important;
-        text-transform: none !important;
-        letter-spacing: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
+        background: #111827 !important;
+        border-color: #111827 !important;
     }
     #payment .payment_methods input[type=radio] {
-        accent-color: #ff6a00;
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
+        position: absolute !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    #payment .payment_methods > li > label {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        padding: 14px 16px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: .5px !important;
+        color: #374151 !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        text-align: center !important;
+        transition: color .2s !important;
+    }
+    #payment .payment_methods li:has(input[type=radio]:checked) > label {
+        color: #fff !important;
+    }
+    #payment .payment_methods li:not(:has(input[type=radio]:checked)):hover {
+        border-color: #d1d5db !important;
+        background: #f9fafb !important;
+    }
+
+    /* Payment box aberta embaixo da lista de tabs */
+    #payment .payment_methods .payment_box {
+        display: none !important;
+    }
+    #payment .payment_methods li.woocommerce-PaymentMethod--selected > .payment_box,
+    #payment .payment_methods li:has(input[type=radio]:checked) > .payment_box {
+        display: block !important;
+    }
+
+    /* Box de campos do gateway — area aberta abaixo das tabs */
+    #payment .woocommerce-PaymentBox,
+    #payment > .wc_payment_form,
+    #payment .payment_box {
+        background: #fff !important;
+        border: 1.5px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        padding: 20px !important;
+        margin-bottom: 16px !important;
+    }
+    #payment .payment_methods .payment_box::before { display: none !important; }
+
+    /* Card visual preview */
+    #slybot-card-preview { flex-shrink: 0; width: 190px; }
+    .slybot-cc-card {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-radius: 14px;
+        padding: 18px 16px 16px;
+        aspect-ratio: 1.586;
+        position: relative;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+    }
+    .slybot-cc-card::before {
+        content: '';
+        position: absolute;
+        top: -50px; right: -50px;
+        width: 170px; height: 170px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.06);
+        pointer-events: none;
+    }
+    .slybot-cc-number {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        color: #fff;
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        position: relative; z-index: 1;
+        margin-top: 8px;
+        text-shadow: 0 1px 4px rgba(0,0,0,.3);
+    }
+    .slybot-cc-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative; z-index: 1;
+    }
+    .slybot-cc-lbl {
+        font-size: 7px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .8px;
+        color: rgba(255,255,255,.5);
+        margin-bottom: 3px;
+    }
+    .slybot-cc-holder {
+        font-size: 10px;
+        font-weight: 600;
+        color: #fff;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        letter-spacing: .6px;
+    }
+    .slybot-cc-expiry {
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: 1px;
+        font-family: 'Courier New', monospace;
+        text-align: right;
+    }
+    .slybot-cc-chip { position: relative; z-index: 1; }
+
+    /* Layout: campos | card */
+    .slybot-cc-inner {
+        display: flex !important;
+        gap: 20px !important;
+        align-items: flex-start !important;
+    }
+    .slybot-cc-fields { flex: 1 !important; min-width: 0 !important; }
+
+    @media (max-width: 600px) {
+        .slybot-cc-inner { flex-direction: column !important; }
+        #slybot-card-preview { width: 100% !important; max-width: 260px !important; margin: 0 auto !important; }
+        .slybot-cc-card { aspect-ratio: 1.7; }
     }
 
     /* ── Botão finalizar pedido ── */
@@ -1018,5 +1132,163 @@ add_action('wp_head', function() {
         padding-right: 42px !important;
     }
     </style>
+    <?php
+}, 99);
+
+
+/* =====================================================
+   CHECKOUT — CARD VISUAL LIVE PREVIEW (JS)
+===================================================== */
+
+add_action('wp_footer', function() {
+    if (!is_checkout() || is_wc_endpoint_url('order-received')) return;
+    ?>
+    <script>
+    (function() {
+        'use strict';
+
+        var injected = false;
+
+        var CHIP_SVG = '<svg viewBox="0 0 50 38" width="34" height="26" xmlns="http://www.w3.org/2000/svg">'
+            + '<rect width="50" height="38" rx="5" fill="#d4a843"/>'
+            + '<rect x="2" y="12" width="46" height="14" fill="#b8912a"/>'
+            + '<rect x="17" y="2" width="16" height="34" fill="#b8912a"/>'
+            + '<rect x="2" y="2" width="46" height="34" rx="5" fill="none" stroke="#c49a30" stroke-width="1.5"/>'
+            + '<rect x="17" y="12" width="16" height="14" fill="#d4a843"/>'
+            + '</svg>';
+
+        function maskNumber(v) {
+            v = v.replace(/\D/g, '').substring(0, 16);
+            var out = '';
+            for (var i = 0; i < 16; i++) {
+                if (i > 0 && i % 4 === 0) out += ' ';
+                out += v[i] !== undefined ? v[i] : '•';
+            }
+            return out;
+        }
+
+        function find(selectors) {
+            for (var i = 0; i < selectors.length; i++) {
+                var el = document.querySelector(selectors[i]);
+                if (el) return el;
+            }
+            return null;
+        }
+
+        function buildCard() {
+            var wrap = document.createElement('div');
+            wrap.id = 'slybot-card-preview';
+            wrap.innerHTML = '<div class="slybot-cc-card">'
+                + '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
+                + '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
+                + '<div class="slybot-cc-footer">'
+                +   '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
+                +   '<div><div class="slybot-cc-lbl">Validade</div><div class="slybot-cc-expiry" id="slcc-expiry">MM/AA</div></div>'
+                + '</div>'
+                + '</div>';
+            return wrap;
+        }
+
+        function bindLiveUpdate() {
+            var numEl = find([
+                'input[id*="card_number"]','input[id*="cardnumber"]','input[id*="cc-number"]',
+                'input[name*="card_number"]','input[placeholder*="Número do Cart"]',
+                'input[placeholder*="numero"]','input[placeholder*="Cartão"]'
+            ]);
+            var nameEl = find([
+                'input[id*="holder"]','input[id*="cc-name"]','input[id*="cc_name"]',
+                'input[name*="holder"]','input[placeholder*="Titular"]','input[placeholder*="impresso"]',
+                'input[placeholder*="Nome no"]'
+            ]);
+            var monthEl = find([
+                'select[id*="month"]','select[id*="mes"]','select[id*="expiry_month"]',
+                'select[name*="month"]','select[name*="mes"]'
+            ]);
+            var yearEl = find([
+                'select[id*="year"]','select[id*="ano"]','select[id*="expiry_year"]',
+                'select[name*="year"]','select[name*="ano"]'
+            ]);
+
+            if (numEl) {
+                numEl.addEventListener('input', function() {
+                    var el = document.getElementById('slcc-num');
+                    if (el) el.textContent = maskNumber(this.value);
+                });
+            }
+            if (nameEl) {
+                nameEl.addEventListener('input', function() {
+                    var el = document.getElementById('slcc-holder');
+                    if (el) el.textContent = this.value.toUpperCase() || 'NOME COMPLETO';
+                });
+            }
+            function updateExpiry() {
+                var el = document.getElementById('slcc-expiry');
+                if (!el) return;
+                var m = monthEl && monthEl.value ? monthEl.value : 'MM';
+                var y = yearEl  && yearEl.value  ? String(yearEl.value).slice(-2) : 'AA';
+                el.textContent = m + '/' + y;
+            }
+            if (monthEl) monthEl.addEventListener('change', updateExpiry);
+            if (yearEl)  yearEl.addEventListener('change', updateExpiry);
+        }
+
+        function inject() {
+            if (injected || document.getElementById('slybot-card-preview')) return;
+
+            // Encontra o payment_box ativo (cartão de crédito)
+            var box = find([
+                '.wc_payment_method:has(input:checked) .payment_box',
+                '.payment_methods li:has(input:checked) .payment_box',
+                '#payment .payment_box'
+            ]);
+            if (!box) return;
+
+            injected = true;
+
+            // Cria wrapper de layout
+            var inner = document.createElement('div');
+            inner.className = 'slybot-cc-inner';
+
+            var fieldsWrap = document.createElement('div');
+            fieldsWrap.className = 'slybot-cc-fields';
+
+            // Move conteúdo existente para fieldsWrap
+            while (box.firstChild) fieldsWrap.appendChild(box.firstChild);
+
+            var cardEl = buildCard();
+            inner.appendChild(fieldsWrap);
+            inner.appendChild(cardEl);
+            box.appendChild(inner);
+
+            bindLiveUpdate();
+        }
+
+        function tryInject() {
+            inject();
+            if (!injected) setTimeout(inject, 600);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', tryInject);
+        } else {
+            tryInject();
+        }
+
+        // Re-injetar ao trocar método de pagamento
+        document.body.addEventListener('change', function(e) {
+            if (e.target && e.target.name === 'payment_method') {
+                injected = false;
+                setTimeout(inject, 300);
+            }
+        });
+
+        // Hook WooCommerce updated_checkout
+        jQuery(document.body).on('updated_checkout payment_method_selected', function() {
+            injected = false;
+            setTimeout(inject, 400);
+        });
+
+    })();
+    </script>
     <?php
 }, 99);
