@@ -911,6 +911,112 @@ add_action('wp_head', function() {
     }
     .woocommerce-form-login-toggle .woocommerce-info::before { display: none !important; }
     .woocommerce-form-login-toggle a { color: #ff6a00 !important; font-weight: 600; }
+
+    /* ── Campos do Asaas (cartão de crédito) ── */
+    #payment .payment_box {
+        background: transparent !important;
+        border: none !important;
+        padding: 16px 4px 4px !important;
+    }
+    #payment .payment_box::before { display: none !important; }
+
+    /* Texto "Pague com cartão..." */
+    #payment .payment_box > p:first-child,
+    #payment .payment_box .asaas-description {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+        margin-bottom: 16px !important;
+    }
+    #payment .payment_box > p:first-child a,
+    #payment .payment_box .asaas-description a {
+        color: #ff6a00 !important;
+        font-weight: 600 !important;
+    }
+
+    /* Labels dos campos do gateway */
+    #payment .payment_box label,
+    #payment .payment_box .form-row label {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: .4px !important;
+        color: #374151 !important;
+        margin-bottom: 6px !important;
+        display: block !important;
+    }
+
+    /* Inputs e selects do gateway */
+    #payment .payment_box input[type=text],
+    #payment .payment_box input[type=tel],
+    #payment .payment_box input[type=number],
+    #payment .payment_box input[type=email],
+    #payment .payment_box select,
+    #payment .payment_box .form-row input,
+    #payment .payment_box .form-row select {
+        width: 100% !important;
+        padding: 11px 14px !important;
+        border: 1.5px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        color: #111827 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        outline: none !important;
+        transition: border-color .2s, box-shadow .2s !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+    }
+    #payment .payment_box input[type=text]:focus,
+    #payment .payment_box input[type=tel]:focus,
+    #payment .payment_box input[type=number]:focus,
+    #payment .payment_box select:focus,
+    #payment .payment_box .form-row input:focus,
+    #payment .payment_box .form-row select:focus {
+        border-color: #ff6a00 !important;
+        box-shadow: 0 0 0 3px rgba(255,106,0,.10) !important;
+    }
+    #payment .payment_box input::placeholder { color: #9ca3af !important; font-size: 13px !important; }
+
+    /* Espaçamento entre grupos de campos */
+    #payment .payment_box .form-row,
+    #payment .payment_box p {
+        margin-bottom: 14px !important;
+    }
+
+    /* Campos lado a lado (Mês / Ano) */
+    #payment .payment_box .form-row-first,
+    #payment .payment_box .form-row-last {
+        width: calc(50% - 6px) !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+    }
+    #payment .payment_box .form-row-first { margin-right: 12px !important; }
+
+    /* Label "Data de expiração" acima do par Mês/Ano */
+    #payment .payment_box .asaas-expiry-label,
+    #payment .payment_box .expiry-group > label {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: .4px !important;
+        color: #374151 !important;
+        display: block !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Select de parcelas */
+    #payment .payment_box select[name*="installment"],
+    #payment .payment_box select[id*="installment"],
+    #payment .payment_box .asaas-installments select {
+        font-weight: 600 !important;
+        color: #111827 !important;
+    }
+
+    /* Ícone de cartão (manter visível, só ajustar posição) */
+    #payment .payment_box .asaas-card-brand,
+    #payment .payment_box input[name*="card_number"] {
+        padding-right: 42px !important;
+    }
     </style>
     <?php
 }, 99);
