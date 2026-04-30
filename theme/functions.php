@@ -834,7 +834,7 @@ add_action('wp_head', function() {
     }
     #payment .payment_methods li {
         flex: 1 !important;
-        height: 50px !important;
+        height: 72px !important;
         border: 1.5px solid #e5e7eb !important;
         border-radius: 10px !important;
         padding: 0 !important;
@@ -852,15 +852,17 @@ add_action('wp_head', function() {
         pointer-events: none !important;
     }
 
-    /* Label: botão centralizado */
+    /* Label: ícone + texto empilhados */
     #payment .payment_methods > li > label {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
-        height: 50px !important;
-        padding: 0 12px !important;
-        font-size: 11px !important;
+        height: 72px !important;
+        gap: 5px !important;
+        padding: 10px 8px !important;
+        font-size: 10px !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
         letter-spacing: .4px !important;
@@ -870,6 +872,8 @@ add_action('wp_head', function() {
         white-space: nowrap !important;
         transition: background .15s, color .15s !important;
     }
+    .slybot-tab-icon { display: block; line-height: 0; }
+    .slybot-tab-icon svg { display: block; }
 
     /* Tab selecionado */
     #payment .payment_methods li:has(input[type=radio]:checked) {
@@ -1145,6 +1149,20 @@ add_action('wp_footer', function() {
     (function() {
         'use strict';
 
+        var ICON_CARD = '<svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">'
+            + '<rect x=".75" y=".75" width="26.5" height="18.5" rx="2.25" stroke="currentColor" stroke-width="1.5"/>'
+            + '<rect y="5" width="28" height="5" fill="currentColor" opacity=".5"/>'
+            + '<rect x="3" y="14" width="8" height="2" rx="1" fill="currentColor"/>'
+            + '<rect x="13" y="14" width="4" height="2" rx="1" fill="currentColor"/>'
+            + '</svg>';
+
+        var ICON_PIX = '<svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">'
+            + '<path d="M8.2 1.5 C9 .7 10 .3 11 .3s2 .4 2.8 1.2l2 2c.4.4.4 1 0 1.4L13 7.7a1 1 0 01-1.4 0L9.5 5.6a.6.6 0 00-.85 0L6.5 7.7a1 1 0 01-1.4 0l-2-2a1 1 0 010-1.4z"/>'
+            + '<path d="M20.5 8.2 C21.3 9 21.7 10 21.7 11s-.4 2-1.2 2.8l-2 2a1 1 0 01-1.4 0l-1.8-1.8a1 1 0 010-1.4l2.1-2.1a.6.6 0 000-.85L15.3 8.5a1 1 0 010-1.4l2-2a1 1 0 011.4 0z"/>'
+            + '<path d="M13.8 20.5 C13 21.3 12 21.7 11 21.7s-2-.4-2.8-1.2l-2-2a1 1 0 010-1.4l1.8-1.8a1 1 0 011.4 0l2.1 2.1a.6.6 0 00.85 0l2.15-2.15a1 1 0 011.4 0l2 2a1 1 0 010 1.4z"/>'
+            + '<path d="M1.5 13.8 C.7 13 .3 12 .3 11s.4-2 1.2-2.8l2-2a1 1 0 011.4 0l1.8 1.8a1 1 0 010 1.4L4.6 11.55a.6.6 0 000 .85l2.15 2.15a1 1 0 010 1.4l-2 2a1 1 0 01-1.4 0z"/>'
+            + '</svg>';
+
         var CHIP_SVG = '<svg viewBox="0 0 50 38" width="34" height="26" xmlns="http://www.w3.org/2000/svg">'
             + '<rect width="50" height="38" rx="5" fill="#d4a843"/>'
             + '<rect x="2" y="12" width="46" height="14" fill="#b8912a"/>'
@@ -1178,6 +1196,20 @@ add_action('wp_footer', function() {
             +   '</div>'
             + '</div>'
             + '</div>';
+
+        /* Insere ícone em cada tab */
+        function addTabIcons() {
+            document.querySelectorAll('#payment .payment_methods li').forEach(function(li) {
+                var radio = li.querySelector('input[type=radio]');
+                var label = li.querySelector('label');
+                if (!radio || !label || label.querySelector('.slybot-tab-icon')) return;
+                var isPix   = radio.value.toLowerCase().indexOf('pix') > -1;
+                var iconEl  = document.createElement('span');
+                iconEl.className = 'slybot-tab-icon';
+                iconEl.innerHTML = isPix ? ICON_PIX : ICON_CARD;
+                label.insertBefore(iconEl, label.firstChild);
+            });
+        }
 
         /* ── Setup: move boxes para container externo (após Asaas popular) ── */
         function setupLayout() {
@@ -1217,6 +1249,8 @@ add_action('wp_footer', function() {
             var boxes = ul.querySelectorAll('.payment_box');
             var ready = true;
             boxes.forEach(function(b) { if (b.children.length === 0) ready = false; });
+
+            addTabIcons();
 
             if (ready) {
                 moveBoxes();
