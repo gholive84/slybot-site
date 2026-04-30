@@ -823,77 +823,87 @@ add_action('wp_head', function() {
         border-radius: 0 0 16px 16px !important;
     }
 
-    /* Accordion vertical — CSS puro, sem mover DOM */
+    /* Tabs horizontais lado a lado */
     #payment .payment_methods {
-        display: block !important;
+        display: flex !important;
+        gap: 10px !important;
         list-style: none !important;
         padding: 0 !important;
-        margin: 0 0 16px !important;
-        border: 1.5px solid #e5e7eb !important;
-        border-radius: 12px !important;
-        overflow: hidden !important;
+        margin: 0 0 12px !important;
+        flex-wrap: nowrap !important;
     }
     #payment .payment_methods li {
-        border: none !important;
-        border-bottom: 1px solid #e5e7eb !important;
-        border-radius: 0 !important;
+        flex: 1 !important;
+        height: 50px !important;
+        border: 1.5px solid #e5e7eb !important;
+        border-radius: 10px !important;
         padding: 0 !important;
         margin: 0 !important;
         background: #fff !important;
         cursor: pointer !important;
-        transition: background .15s !important;
+        overflow: hidden !important;
+        transition: background .15s, border-color .15s !important;
     }
-    #payment .payment_methods li:last-child { border-bottom: none !important; }
 
-    /* Radio invisível mas funcional */
+    /* Radio invisível */
     #payment .payment_methods input[type=radio] {
         position: absolute !important;
         opacity: 0 !important;
         pointer-events: none !important;
     }
 
-    /* Label: linha clicável 52px */
+    /* Label: botão centralizado */
     #payment .payment_methods > li > label {
         display: flex !important;
         align-items: center !important;
-        height: 52px !important;
-        padding: 0 20px !important;
-        font-size: 12px !important;
+        justify-content: center !important;
+        text-align: center !important;
+        height: 50px !important;
+        padding: 0 12px !important;
+        font-size: 11px !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
-        letter-spacing: .5px !important;
+        letter-spacing: .4px !important;
         color: #374151 !important;
         cursor: pointer !important;
         margin: 0 !important;
-        gap: 10px !important;
-        transition: background .15s, color .15s !important;
         white-space: nowrap !important;
+        transition: background .15s, color .15s !important;
     }
 
-    /* Tab selecionado: label escuro */
-    #payment .payment_methods li:has(input[type=radio]:checked) > label {
+    /* Tab selecionado */
+    #payment .payment_methods li:has(input[type=radio]:checked) {
         background: #111827 !important;
+        border-color: #111827 !important;
+    }
+    #payment .payment_methods li:has(input[type=radio]:checked) > label {
         color: #fff !important;
     }
-    #payment .payment_methods li:not(:has(input:checked)):hover > label {
+    #payment .payment_methods li:not(:has(input:checked)):hover {
+        border-color: #d1d5db !important;
         background: #f9fafb !important;
     }
 
-    /* Payment box: oculto por default */
-    #payment .payment_methods .payment_box {
-        display: none !important;
+    /* Boxes ficam escondidas no li — JS as move para o container externo */
+    #payment .payment_methods .payment_box { display: none !important; }
+
+    /* Container externo do payment box */
+    #slybot-pbox-container {
+        background: #fff;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 4px 16px 16px;
+        margin-bottom: 16px;
     }
-    /* Payment box: visível quando tab selecionado */
-    #payment .payment_methods li:has(input[type=radio]:checked) .payment_box {
+    #slybot-pbox-container .payment_box {
         display: block !important;
         background: transparent !important;
         border: none !important;
-        padding: 4px 16px 16px !important;
+        padding: 0 !important;
         margin: 0 !important;
     }
-    #payment .payment_methods li:has(input[type=radio]:checked) .payment_box::before {
-        display: none !important;
-    }
+    #slybot-pbox-container .payment_box::before { display: none !important; }
+    .slybot-pbox-item { display: block; width: 100%; }
 
     /* ── Card visual preview ── */
     #slybot-card-preview {
@@ -1172,16 +1182,89 @@ add_action('wp_footer', function() {
             + '</div>'
             + '</div>';
 
-        /* Encontra o payment_box do cartão de crédito (não-pix) */
+        /* ── Setup: move boxes para container externo (após Asaas popular) ── */
+        function setupLayout() {
+            var ul = document.querySelector('#payment .payment_methods');
+            if (!ul) return;
+
+            // Remove container anterior (ex: em updated_checkout)
+            var old = document.getElementById('slybot-pbox-container');
+            if (old) old.remove();
+            document.querySelectorAll('#slybot-pbox-container').forEach(function(el){ el.remove(); });
+
+            var container = document.createElement('div');
+            container.id  = 'slybot-pbox-container';
+            ul.parentNode.insertBefore(container, ul.nextSibling);
+
+            function moveBoxes() {
+                // Limpa container de runs anteriores
+                while (container.firstChild) container.removeChild(container.firstChild);
+                ul.querySelectorAll('li').forEach(function(li) {
+                    var radio = li.querySelector('input[type=radio]');
+                    var box   = li.querySelector('.payment_box');
+                    if (!box || !radio) return;
+                    var wrap = document.createElement('div');
+                    wrap.className      = 'slybot-pbox-item';
+                    wrap.dataset.method = radio.value;
+                    wrap.style.display  = radio.checked ? 'block' : 'none';
+                    wrap.appendChild(box);
+                    container.appendChild(wrap);
+                });
+                // Remove preview antigo e reinicializa
+                var oldPrev = document.getElementById('slybot-card-preview');
+                if (oldPrev) oldPrev.remove();
+                addCardPreview();
+            }
+
+            // Verifica se todos os payment_boxes têm conteúdo
+            var boxes = ul.querySelectorAll('.payment_box');
+            var ready = true;
+            boxes.forEach(function(b) { if (b.children.length === 0) ready = false; });
+
+            if (ready) {
+                moveBoxes();
+            } else {
+                // Aguarda Asaas popular os campos
+                var obs = new MutationObserver(function() {
+                    var done = true;
+                    ul.querySelectorAll('.payment_box').forEach(function(b) { if (b.children.length === 0) done = false; });
+                    if (done) { obs.disconnect(); moveBoxes(); }
+                });
+                obs.observe(ul, { childList: true, subtree: true });
+                setTimeout(function() { obs.disconnect(); moveBoxes(); }, 2000);
+            }
+
+            // Alterna visibilidade ao trocar tab
+            ul.addEventListener('change', function(e) {
+                if (!e.target || e.target.type !== 'radio') return;
+                container.querySelectorAll('.slybot-pbox-item').forEach(function(item) {
+                    item.style.display = item.dataset.method === e.target.value ? 'block' : 'none';
+                });
+            });
+        }
+
+        /* Encontra o payment_box do cartão (não-pix) — busca no container ou no li */
         function findCreditBox() {
-            var found = null;
+            // Primeiro: busca no container externo (após JS mover)
+            var container = document.getElementById('slybot-pbox-container');
+            if (container) {
+                var found = null;
+                container.querySelectorAll('.slybot-pbox-item').forEach(function(wrap) {
+                    if (wrap.dataset.method && wrap.dataset.method.toLowerCase().indexOf('pix') === -1) {
+                        found = wrap.querySelector('.payment_box') || wrap;
+                    }
+                });
+                if (found) return found;
+            }
+            // Fallback: busca no li original
+            var fallback = null;
             document.querySelectorAll('#payment .payment_methods li').forEach(function(li) {
                 var radio = li.querySelector('input[type=radio]');
                 if (radio && radio.value.toLowerCase().indexOf('pix') === -1) {
-                    found = li.querySelector('.payment_box');
+                    fallback = li.querySelector('.payment_box');
                 }
             });
-            return found;
+            return fallback;
         }
 
         /* Insere o card preview no topo do payment_box */
@@ -1194,18 +1277,16 @@ add_action('wp_footer', function() {
             bindFields();
         }
 
-        /* Tenta adicionar o card preview; usa MutationObserver se campos ainda não existem */
+        /* Adiciona card preview (aguarda campos se necessário) */
         function addCardPreview() {
             var box = findCreditBox();
             if (!box) return;
             if (document.getElementById('slybot-card-preview')) return;
 
-            // Se Asaas já populou os campos, inserir agora
             if (box.querySelector('input, select')) {
                 insertCardPreview(box);
                 return;
             }
-            // Caso contrário, observar até aparecerem
             var obs = new MutationObserver(function() {
                 if (box.querySelector('input, select')) {
                     obs.disconnect();
@@ -1213,12 +1294,9 @@ add_action('wp_footer', function() {
                 }
             });
             obs.observe(box, { childList: true, subtree: true });
-            // Fallback: tentar após 1,5s
             setTimeout(function() {
                 obs.disconnect();
-                if (!document.getElementById('slybot-card-preview')) {
-                    insertCardPreview(box);
-                }
+                if (!document.getElementById('slybot-card-preview')) insertCardPreview(box);
             }, 1500);
         }
 
@@ -1322,12 +1400,12 @@ add_action('wp_footer', function() {
         }
 
         /* Init */
-        jQuery(document.body).on('updated_checkout', addCardPreview);
+        jQuery(document.body).on('updated_checkout', setupLayout);
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', addCardPreview);
+            document.addEventListener('DOMContentLoaded', setupLayout);
         } else {
-            addCardPreview();
+            setupLayout();
         }
 
     })();
