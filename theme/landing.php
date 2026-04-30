@@ -921,7 +921,7 @@
             <a href="#topo"><img src="https://slybot.com.br/wp-content/uploads/2025/12/logo-1.png" alt="SlyBot" loading="lazy"></a>
         </div>
         <div class="lp-nav__right">
-            <a href="#planos" class="btn btn-primary">Contratar</a>
+            <a href="#lista-espera" class="btn btn-primary">Contratar</a>
             <a href="/minha-conta" class="btn btn-outline" style="padding:8px 18px;font-size:14px;">Entrar</a>
             <ul class="lp-nav__links">
                 <li><a href="#robos">Como Funciona</a></li>
@@ -942,7 +942,7 @@
         <h1>Opere com <span>disciplina</span> e execução consistente</h1>
         <p class="lp-hero__sub">SlyBot é um robô automatizado para day trade no MT5, baseado em análise estatística e modelos estruturados. Sem promessas — apenas metodologia.</p>
         <div class="lp-hero__ctas">
-            <a href="#planos" class="btn btn-primary btn-lg">Contrate Agora</a>
+            <a href="#lista-espera" class="btn btn-primary btn-lg">Contrate Agora</a>
             <a href="#robos" class="btn btn-outline btn-lg">Como funciona</a>
         </div>
         <div class="lp-hero__badges">
@@ -984,7 +984,7 @@
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT STATS</h3>
                     <p class="robot-block__text">Opera com base em análise estatística e padrões de comportamento histórico do mercado. Ideal para quem busca consistência com operações baseadas em dados.</p>
-                    <a href="#planos" class="robot-block__cta">Contrate Agora</a>
+                    <a href="#lista-espera" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
         </div>
@@ -1000,7 +1000,7 @@
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT ATR</h3>
                     <p class="robot-block__text">Utiliza o indicador ATR para identificar volatilidade e definir entradas e stops dinâmicos. Adapta-se automaticamente às condições do mercado.</p>
-                    <a href="#planos" class="robot-block__cta">Contrate Agora</a>
+                    <a href="#lista-espera" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
         </div>
@@ -1016,7 +1016,7 @@
                 <div class="robot-block__body">
                     <h3 class="robot-block__title">SLYBOT GRID</h3>
                     <p class="robot-block__text">Estratégia em grade para mercados lateralizados, capturando oscilações dentro de uma faixa de preço. Perfeito para períodos de menor tendência.</p>
-                    <a href="#planos" class="robot-block__cta">Contrate Agora</a>
+                    <a href="#lista-espera" class="robot-block__cta">Contrate Agora</a>
                 </div>
             </div>
         </div>
@@ -1196,7 +1196,8 @@
     </div>
 </section>
 
-<!-- ── Planos ───────────────────────────────────────────────────────────── -->
+<!-- ── Planos (oculto) ──────────────────────────────────────────────────── -->
+<?php /* PLANOS TEMPORARIAMENTE OCULTOS */ if (false): ?>
 <section class="lp-section lp-section--light" id="planos">
     <div class="container">
         <div class="section-header section-header--center">
@@ -1245,6 +1246,7 @@
         <p style="text-align:center; font-size:0.78rem; color:var(--text-muted); margin-top:24px;">*Acesso permanente enquanto o projeto SlyBot existir e estiver ativo.</p>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- ── Lista de Espera ──────────────────────────────────────────────────── -->
 <section class="lp-section lp-section--white" id="lista-espera">
