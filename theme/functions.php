@@ -905,12 +905,26 @@ add_action('wp_head', function() {
     }
     #slybot-pbox-container .payment_box::before { display: none !important; }
 
-    /* Card visual preview — absolute no container */
-    #slybot-card-preview { width: 180px; }
+    /* Card visual preview — centralizado acima dos campos */
+    .slybot-pbox-item { display: block !important; width: 100% !important; }
+    #slybot-pbox-container .payment_box input,
+    #slybot-pbox-container .payment_box select {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    #slybot-card-preview {
+        display: block;
+        width: 100%;
+        max-width: 220px;
+        margin: 0 auto 20px;
+    }
     .slybot-cc-card {
         background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         border-radius: 14px;
         padding: 18px 16px 16px;
+        width: 100%;
         aspect-ratio: 1.586;
         position: relative;
         box-shadow: 0 12px 40px rgba(0,0,0,0.28);
@@ -975,7 +989,6 @@ add_action('wp_head', function() {
     .slybot-cc-chip { position: relative; z-index: 1; }
 
     @media (max-width: 600px) {
-        #slybot-pbox-container { padding-right: 20px !important; }
         #slybot-card-preview { display: none !important; }
     }
 
@@ -1190,22 +1203,16 @@ add_action('wp_footer', function() {
             });
         }
 
-        /* ── Card preview: posição absoluta dentro do wrapper ── */
+        /* ── Card preview: topo do box, centralizado ── */
         function addCardPreview(container) {
-            // Encontra wrapper que não é PIX
             var creditWrap = null;
             container.querySelectorAll('.slybot-pbox-item').forEach(function(item) {
                 if (item.dataset.method.toLowerCase().indexOf('pix') === -1) creditWrap = item;
             });
             if (!creditWrap || creditWrap.querySelector('#slybot-card-preview')) return;
 
-            creditWrap.style.position    = 'relative';
-            creditWrap.style.paddingRight = '210px';
-            creditWrap.style.minHeight   = '220px';
-
             var cardEl = document.createElement('div');
             cardEl.id  = 'slybot-card-preview';
-            cardEl.style.cssText = 'position:absolute;right:16px;top:16px;width:182px;';
             cardEl.innerHTML = '<div class="slybot-cc-card">'
                 + '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
                 + '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
@@ -1213,7 +1220,10 @@ add_action('wp_footer', function() {
                 +   '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
                 +   '<div><div class="slybot-cc-lbl">Validade</div><div class="slybot-cc-expiry" id="slcc-expiry">MM/AA</div></div>'
                 + '</div></div>';
-            creditWrap.appendChild(cardEl);
+
+            // Insere antes do payment_box (no topo do wrapper)
+            var box = creditWrap.querySelector('.payment_box');
+            creditWrap.insertBefore(cardEl, box);
 
             bindFields();
         }
