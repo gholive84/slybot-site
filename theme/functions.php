@@ -851,19 +851,26 @@ add_action('wp_head', function() {
         pointer-events: none !important;
     }
     /* Label do tab */
+    #payment .payment_methods li {
+        height: 52px !important;
+    }
     #payment .payment_methods > li > label {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
-        padding: 13px 16px !important;
-        font-size: 12px !important;
+        text-align: center !important;
+        height: 100% !important;
+        gap: 6px !important;
+        padding: 8px 12px !important;
+        font-size: 11px !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
-        letter-spacing: .5px !important;
+        letter-spacing: .4px !important;
+        white-space: nowrap !important;
         color: #374151 !important;
         cursor: pointer !important;
         margin: 0 !important;
+        line-height: 1.3 !important;
         transition: color .2s !important;
     }
     /* Tab selecionado */
@@ -1304,13 +1311,14 @@ add_action('wp_footer', function() {
         /* ── Init ── */
         function init() {
             setupTabs();
-            setTimeout(injectCardPreview, 400);
+            // Espera o Asaas terminar de renderizar os campos antes de injetar
+            setTimeout(injectCardPreview, 900);
         }
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
-            init();
+            setTimeout(init, 200); // garante que o DOM do gateway já foi montado
         }
 
         jQuery(document.body).on('updated_checkout', function() {
