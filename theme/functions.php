@@ -901,22 +901,35 @@ add_action('wp_head', function() {
         width: 100%;
         max-width: 240px;
         margin: 4px auto 14px;
-    }
-    .slybot-cc-card {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        border-radius: 14px;
-        padding: 18px 16px 16px;
-        width: 100%;
         aspect-ratio: 1.586;
+        perspective: 900px;
+    }
+    .slybot-cc-inner {
         position: relative;
+        width: 100%; height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.55s ease;
+    }
+    .slybot-cc-inner.is-flipped { transform: rotateY(180deg); }
+    .slybot-cc-front, .slybot-cc-back {
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        overflow: hidden;
         box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+    }
+    /* Frente */
+    .slybot-cc-front {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         color: #fff;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        overflow: hidden;
+        padding: 16px 16px 14px;
     }
-    .slybot-cc-card::before {
+    .slybot-cc-front::before {
         content: '';
         position: absolute;
         top: -50px; right: -50px;
@@ -925,15 +938,64 @@ add_action('wp_head', function() {
         background: rgba(255,255,255,.06);
         pointer-events: none;
     }
+    /* Verso */
+    .slybot-cc-back {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        transform: rotateY(180deg);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .slybot-cc-stripe {
+        background: #0d1117;
+        height: 38px;
+        margin-top: 22px;
+    }
+    .slybot-cc-sig-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+    }
+    .slybot-cc-sig {
+        flex: 1;
+        height: 30px;
+        background: repeating-linear-gradient(90deg, #fff 0 5px, #e5e5e5 5px 10px);
+        border-radius: 3px;
+    }
+    .slybot-cc-cvv-box {
+        background: #fff;
+        border-radius: 4px;
+        padding: 4px 10px;
+        text-align: center;
+        min-width: 44px;
+    }
+    .slybot-cc-cvv-lbl {
+        font-size: 7px; font-weight: 700; letter-spacing: .6px;
+        color: #6b7280; text-transform: uppercase;
+    }
+    .slybot-cc-cvv-val {
+        font-size: 13px; font-weight: 700; color: #111827;
+        letter-spacing: 2px; font-family: 'Courier New', monospace;
+    }
+    /* Elementos comuns */
+    .slybot-cc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative; z-index: 1;
+    }
     .slybot-cc-number {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 600;
-        letter-spacing: 2.5px;
+        letter-spacing: 2px;
         color: #fff;
         text-align: center;
         font-family: 'Courier New', monospace;
         position: relative; z-index: 1;
-        margin-top: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
         text-shadow: 0 1px 4px rgba(0,0,0,.3);
     }
     .slybot-cc-footer {
@@ -944,34 +1006,21 @@ add_action('wp_head', function() {
     }
     .slybot-cc-lbl {
         font-size: 7px; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .8px; color: rgba(255,255,255,.5); margin-bottom: 3px;
+        letter-spacing: .8px; color: rgba(255,255,255,.5); margin-bottom: 2px;
     }
     .slybot-cc-holder {
         font-size: 10px; font-weight: 600; color: #fff;
-        max-width: 110px; overflow: hidden; text-overflow: ellipsis;
-        white-space: nowrap; letter-spacing: .6px;
+        max-width: 120px; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; letter-spacing: .5px;
     }
     .slybot-cc-expiry {
         font-size: 11px; font-weight: 600; color: #fff;
         letter-spacing: 1px; font-family: 'Courier New', monospace; text-align: right;
     }
-    .slybot-cc-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        position: relative; z-index: 1;
-    }
-    .slybot-cc-chip { }
     .slybot-cc-brand {
-        font-size: 13px;
-        font-weight: 800;
-        color: rgba(255,255,255,.85);
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        font-style: italic;
-        text-shadow: 0 1px 4px rgba(0,0,0,.4);
-        min-width: 60px;
-        text-align: right;
+        font-size: 12px; font-weight: 800; color: rgba(255,255,255,.9);
+        letter-spacing: 1px; text-transform: uppercase; font-style: italic;
+        text-shadow: 0 1px 4px rgba(0,0,0,.4); text-align: right;
     }
 
     @media (max-width: 480px) {
@@ -1097,16 +1146,31 @@ add_action('wp_footer', function() {
             + '<rect x="17" y="12" width="16" height="14" fill="#d4a843"/>'
             + '</svg>';
 
-        var CARD_HTML = '<div class="slybot-cc-card">'
-            + '<div class="slybot-cc-top">'
-            +   '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
-            +   '<div class="slybot-cc-brand" id="slcc-brand"></div>'
+        var CARD_HTML = '<div class="slybot-cc-inner" id="slcc-inner">'
+            /* Frente */
+            + '<div class="slybot-cc-front">'
+            +   '<div class="slybot-cc-top">'
+            +     '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
+            +     '<div class="slybot-cc-brand" id="slcc-brand"></div>'
+            +   '</div>'
+            +   '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
+            +   '<div class="slybot-cc-footer">'
+            +     '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
+            +     '<div><div class="slybot-cc-lbl">Validade</div><div class="slybot-cc-expiry" id="slcc-expiry">MM/AA</div></div>'
+            +   '</div>'
             + '</div>'
-            + '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
-            + '<div class="slybot-cc-footer">'
-            + '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
-            + '<div><div class="slybot-cc-lbl">Validade</div><div class="slybot-cc-expiry" id="slcc-expiry">MM/AA</div></div>'
-            + '</div></div>';
+            /* Verso */
+            + '<div class="slybot-cc-back">'
+            +   '<div class="slybot-cc-stripe"></div>'
+            +   '<div class="slybot-cc-sig-row">'
+            +     '<div class="slybot-cc-sig"></div>'
+            +     '<div class="slybot-cc-cvv-box">'
+            +       '<div class="slybot-cc-cvv-lbl">CVV</div>'
+            +       '<div class="slybot-cc-cvv-val" id="slcc-cvv">•••</div>'
+            +     '</div>'
+            +   '</div>'
+            + '</div>'
+            + '</div>';
 
         /* Encontra o payment_box do cartão de crédito (não-pix) */
         function findCreditBox() {
@@ -1187,35 +1251,74 @@ add_action('wp_footer', function() {
             var numEl    = document.getElementById('slcc-num');
             var holderEl = document.getElementById('slcc-holder');
             var expiryEl = document.getElementById('slcc-expiry');
+            var cvvEl    = document.getElementById('slcc-cvv');
+            var inner    = document.getElementById('slcc-inner');
             var monthSel = null, yearSel = null;
 
-            // Busca todos os inputs no box e classifica por atributos
+            function flip(on)  { if (inner) inner.classList[on ? 'add' : 'remove']('is-flipped'); }
+            function upExp()   {
+                if (!expiryEl) return;
+                var m = monthSel && monthSel.value ? monthSel.value : 'MM';
+                var y = yearSel  && yearSel.value  ? String(yearSel.value).slice(-2) : 'AA';
+                expiryEl.textContent = m + '/' + y;
+            }
+
+            // Inputs: classificar por atributos
             box.querySelectorAll('input').forEach(function(inp) {
                 if (inp.type === 'radio' || inp.type === 'checkbox' || inp.type === 'hidden') return;
-                var key = (inp.id + ' ' + inp.name + ' ' + (inp.placeholder || '')).toLowerCase();
-                var isNum  = key.indexOf('number') > -1 || key.indexOf('numero') > -1 || key.indexOf('card') > -1;
+                var key = (inp.id + ' ' + inp.name + ' ' + (inp.placeholder || '') + ' ' + (inp.getAttribute('data-label') || '')).toLowerCase();
+                var isNum  = key.indexOf('number') > -1 || key.indexOf('numero') > -1 || key.indexOf('cart') > -1;
                 var isName = key.indexOf('holder') > -1 || key.indexOf('nome') > -1 || key.indexOf('name') > -1 || key.indexOf('titular') > -1;
-                if (isNum)  inp.addEventListener('input',  function() {
-                    if (numEl)    numEl.textContent    = maskNum(this.value);
-                    var brandEl = document.getElementById('slcc-brand');
-                    if (brandEl) brandEl.textContent = detectBrand(this.value);
-                });
-                if (isName) inp.addEventListener('input',  function() { if (holderEl) holderEl.textContent = this.value.toUpperCase() || 'NOME COMPLETO'; });
+                var isCvv  = key.indexOf('cvv') > -1 || key.indexOf('ccv') > -1 || key.indexOf('cvc') > -1 || key.indexOf('seguranca') > -1 || key.indexOf('security') > -1 || key.indexOf('codigo') > -1;
+
+                if (isNum) {
+                    inp.addEventListener('input', function() {
+                        if (numEl)    numEl.textContent    = maskNum(this.value);
+                        var brandEl = document.getElementById('slcc-brand');
+                        if (brandEl) brandEl.textContent  = detectBrand(this.value);
+                    });
+                }
+                if (isName) {
+                    inp.addEventListener('input', function() {
+                        if (holderEl) holderEl.textContent = this.value.toUpperCase() || 'NOME COMPLETO';
+                    });
+                }
+                if (isCvv) {
+                    inp.addEventListener('focus',  function() { flip(true);  });
+                    inp.addEventListener('blur',   function() { flip(false); });
+                    inp.addEventListener('input',  function() {
+                        if (cvvEl) cvvEl.textContent = this.value || '•••';
+                    });
+                }
+
+                // Fallback: se nenhuma categoria, tenta pelo valor atual
+                if (!isNum && !isName && !isCvv && inp.value.replace(/\D/g,'').length >= 13) {
+                    // Provavelmente número do cartão
+                    inp.addEventListener('input', function() {
+                        if (numEl) numEl.textContent = maskNum(this.value);
+                        var brandEl = document.getElementById('slcc-brand');
+                        if (brandEl) brandEl.textContent = detectBrand(this.value);
+                    });
+                }
             });
 
-            // Selects de mês/ano
+            // Selects de mês/ano — busca por atributos ou por valores das options
             box.querySelectorAll('select').forEach(function(sel) {
-                var key = (sel.id + ' ' + sel.name).toLowerCase();
-                if (key.indexOf('month') > -1 || key.indexOf('mes') > -1) monthSel = sel;
-                if (key.indexOf('year')  > -1 || key.indexOf('ano') > -1) yearSel  = sel;
+                var key = (sel.id + ' ' + sel.name + ' ' + (sel.getAttribute('aria-label') || '')).toLowerCase();
+                var isMes = key.indexOf('month') > -1 || key.indexOf('mes') > -1 || key.indexOf('mês') > -1;
+                var isAno = key.indexOf('year')  > -1 || key.indexOf('ano') > -1;
+                // Fallback: opções de 1–12 = mês; opções com 4 dígitos = ano
+                if (!isMes && !isAno && sel.options.length > 0) {
+                    var firstVal = parseInt(sel.options[sel.options.length > 1 ? 1 : 0].value);
+                    if (!isNaN(firstVal) && firstVal <= 12) isMes = true;
+                    else if (!isNaN(firstVal) && firstVal > 1000)  isAno = true;
+                }
+                if (isMes) { monthSel = sel; sel.addEventListener('change', upExp); }
+                if (isAno) { yearSel  = sel; sel.addEventListener('change', upExp); }
             });
-            function upExp() {
-                if (!expiryEl) return;
-                expiryEl.textContent = (monthSel && monthSel.value ? monthSel.value : 'MM')
-                    + '/' + (yearSel && yearSel.value ? String(yearSel.value).slice(-2) : 'AA');
-            }
-            if (monthSel) monthSel.addEventListener('change', upExp);
-            if (yearSel)  yearSel.addEventListener('change',  upExp);
+
+            // Exibe valores já preenchidos na página
+            upExp();
         }
 
         /* Init */
