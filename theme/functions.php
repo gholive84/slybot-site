@@ -1146,9 +1146,6 @@ add_action('wp_footer', function() {
     (function() {
         'use strict';
 
-        var tabsDone    = false;
-        var cardDone    = false;
-
         var CHIP_SVG = '<svg viewBox="0 0 50 38" width="34" height="26" xmlns="http://www.w3.org/2000/svg">'
             + '<rect width="50" height="38" rx="5" fill="#d4a843"/>'
             + '<rect x="2" y="12" width="46" height="14" fill="#b8912a"/>'
@@ -1157,158 +1154,98 @@ add_action('wp_footer', function() {
             + '<rect x="17" y="12" width="16" height="14" fill="#d4a843"/>'
             + '</svg>';
 
-        /* ── Tabs: extrai payment_box para fora do ul ── */
+        /* ── Monta tabs: move TODOS os boxes de uma vez ── */
         function setupTabs() {
             var ul = document.querySelector('#payment .payment_methods');
-            if (!ul || tabsDone) return;
+            if (!ul || document.getElementById('slybot-pbox-container')) return;
 
-            // Cria container externo
-            var container = document.getElementById('slybot-pbox-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'slybot-pbox-container';
-                ul.parentNode.insertBefore(container, ul.nextSibling);
-            }
+            var container = document.createElement('div');
+            container.id  = 'slybot-pbox-container';
+            ul.parentNode.insertBefore(container, ul.nextSibling);
 
-            // Move cada payment_box para o container
+            // Move TODOS os payment_box agora (pré-renderizados)
             ul.querySelectorAll('li').forEach(function(li) {
-                var radio  = li.querySelector('input[type=radio]');
-                var box    = li.querySelector('.payment_box');
+                var radio = li.querySelector('input[type=radio]');
+                var box   = li.querySelector('.payment_box');
                 if (!box || !radio) return;
 
-                var method = radio.value;
-                var existing = container.querySelector('[data-method="' + method + '"]');
-                if (existing) return;
-
-                var wrapper = document.createElement('div');
-                wrapper.className = 'slybot-pbox-item';
-                wrapper.dataset.method = method;
-                wrapper.style.display  = 'none';
-                wrapper.appendChild(box);
-                box.style.display = 'block';
-                container.appendChild(wrapper);
+                var wrap = document.createElement('div');
+                wrap.className        = 'slybot-pbox-item';
+                wrap.dataset.method   = radio.value;
+                wrap.style.display    = radio.checked ? 'block' : 'none';
+                box.style.display     = 'block';
+                wrap.appendChild(box);
+                container.appendChild(wrap);
             });
 
-            showActiveBox(ul, container);
-            tabsDone = true;
+            // Inicia card preview no box de cartão (já está no DOM)
+            addCardPreview(container);
 
-            // Mostra box correta ao trocar tab
+            // Alterna ao clicar nas tabs
             ul.addEventListener('change', function(e) {
-                if (e.target && e.target.type === 'radio') {
-                    showActiveBox(ul, container);
-                    cardDone = false;
-                    setTimeout(injectCardPreview, 300);
-                }
+                if (!e.target || e.target.type !== 'radio') return;
+                container.querySelectorAll('.slybot-pbox-item').forEach(function(item) {
+                    item.style.display = item.dataset.method === e.target.value ? 'block' : 'none';
+                });
             });
         }
 
-        function showActiveBox(ul, container) {
-            var checked = ul.querySelector('input[type=radio]:checked');
-            var active  = checked ? checked.value : null;
+        /* ── Card preview: posição absoluta dentro do wrapper ── */
+        function addCardPreview(container) {
+            // Encontra wrapper que não é PIX
+            var creditWrap = null;
             container.querySelectorAll('.slybot-pbox-item').forEach(function(item) {
-                item.style.display = (item.dataset.method === active) ? 'block' : 'none';
+                if (item.dataset.method.toLowerCase().indexOf('pix') === -1) creditWrap = item;
             });
-        }
+            if (!creditWrap || creditWrap.querySelector('#slybot-card-preview')) return;
 
-        /* ── Card preview live ── */
-        function maskNumber(v) {
-            v = v.replace(/\D/g, '').substring(0, 16);
-            var out = '';
-            for (var i = 0; i < 16; i++) {
-                if (i > 0 && i % 4 === 0) out += ' ';
-                out += v[i] !== undefined ? v[i] : '•';
-            }
-            return out;
-        }
+            creditWrap.style.position    = 'relative';
+            creditWrap.style.paddingRight = '210px';
+            creditWrap.style.minHeight   = '220px';
 
-        function findEl(selectors) {
-            for (var i = 0; i < selectors.length; i++) {
-                var el = document.querySelector(selectors[i]);
-                if (el) return el;
-            }
-            return null;
-        }
-
-        function buildCardEl() {
-            var wrap = document.createElement('div');
-            wrap.id  = 'slybot-card-preview';
-            wrap.innerHTML = '<div class="slybot-cc-card">'
+            var cardEl = document.createElement('div');
+            cardEl.id  = 'slybot-card-preview';
+            cardEl.style.cssText = 'position:absolute;right:16px;top:16px;width:182px;';
+            cardEl.innerHTML = '<div class="slybot-cc-card">'
                 + '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
                 + '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
                 + '<div class="slybot-cc-footer">'
                 +   '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
                 +   '<div><div class="slybot-cc-lbl">Validade</div><div class="slybot-cc-expiry" id="slcc-expiry">MM/AA</div></div>'
                 + '</div></div>';
-            return wrap;
-        }
-
-        function bindFields() {
-            var numEl = findEl([
-                'input[id*="card_number"]','input[id*="cardnumber"]','input[id*="cc-number"]',
-                'input[name*="card_number"]','input[placeholder*="Número do Cart"]','input[placeholder*="Cartão"]'
-            ]);
-            var nameEl = findEl([
-                'input[id*="holder"]','input[id*="cc-name"]','input[id*="cc_name"]',
-                'input[name*="holder"]','input[placeholder*="Titular"]','input[placeholder*="impresso"]','input[placeholder*="Nome no"]'
-            ]);
-            var monthEl = findEl(['select[id*="month"]','select[id*="mes"]','select[name*="month"]','select[name*="mes"]']);
-            var yearEl  = findEl(['select[id*="year"]', 'select[id*="ano"]', 'select[name*="year"]', 'select[name*="ano"]']);
-
-            if (numEl)  numEl.addEventListener('input',  function() { var e=document.getElementById('slcc-num');   if(e) e.textContent=maskNumber(this.value); });
-            if (nameEl) nameEl.addEventListener('input', function() { var e=document.getElementById('slcc-holder');if(e) e.textContent=this.value.toUpperCase()||'NOME COMPLETO'; });
-
-            function upExp() {
-                var e=document.getElementById('slcc-expiry'); if(!e) return;
-                e.textContent = (monthEl&&monthEl.value?monthEl.value:'MM') + '/' + (yearEl&&yearEl.value?String(yearEl.value).slice(-2):'AA');
-            }
-            if (monthEl) monthEl.addEventListener('change', upExp);
-            if (yearEl)  yearEl.addEventListener('change',  upExp);
-        }
-
-        function injectCardPreview() {
-            if (cardDone || document.getElementById('slybot-card-preview')) return;
-
-            var container = document.getElementById('slybot-pbox-container');
-            if (!container) return;
-
-            // Só injeta no método de cartão (não PIX)
-            var activeItem = container.querySelector('.slybot-pbox-item[style*="block"]')
-                          || container.querySelector('.slybot-pbox-item');
-            if (!activeItem) return;
-
-            var method = activeItem.dataset.method || '';
-            if (method.toLowerCase().indexOf('pix') !== -1) return;
-
-            cardDone = true;
-
-            // Card em posição absoluta no canto — não mexe nos campos
-            container.style.position = 'relative';
-            container.style.paddingRight = '210px';
-
-            var cardEl = buildCardEl();
-            cardEl.style.cssText = 'position:absolute;right:20px;top:20px;width:180px;';
-            container.appendChild(cardEl);
+            creditWrap.appendChild(cardEl);
 
             bindFields();
         }
 
-        /* ── Init ── */
-        function init() {
-            setupTabs();
-            // Espera o Asaas terminar de renderizar os campos antes de injetar
-            setTimeout(injectCardPreview, 900);
+        /* ── Live update dos campos ── */
+        function sel(arr) { for(var i=0;i<arr.length;i++){var e=document.querySelector(arr[i]);if(e)return e;} return null; }
+        function maskNum(v) {
+            v=v.replace(/\D/g,'').substring(0,16); var o='';
+            for(var i=0;i<16;i++){if(i>0&&i%4===0)o+=' '; o+=v[i]!==undefined?v[i]:'•';} return o;
         }
+
+        function bindFields() {
+            var num   = sel(['input[id*="card_number"]','input[name*="card_number"]','input[placeholder*="Número do Cart"]','input[placeholder*="Cartão"]']);
+            var name  = sel(['input[id*="holder"]','input[name*="holder"]','input[placeholder*="Titular"]','input[placeholder*="impresso"]','input[placeholder*="Nome no"]']);
+            var month = sel(['select[id*="month"]','select[id*="mes"]','select[name*="month"]','select[name*="mes"]']);
+            var year  = sel(['select[id*="year"]','select[id*="ano"]','select[name*="year"]','select[name*="ano"]']);
+
+            if (num)  num.addEventListener('input',  function(){ var e=document.getElementById('slcc-num');   if(e)e.textContent=maskNum(this.value); });
+            if (name) name.addEventListener('input', function(){ var e=document.getElementById('slcc-holder');if(e)e.textContent=this.value.toUpperCase()||'NOME COMPLETO'; });
+            function upExp(){ var e=document.getElementById('slcc-expiry');if(!e)return; e.textContent=(month&&month.value?month.value:'MM')+'/'+(year&&year.value?String(year.value).slice(-2):'AA'); }
+            if (month) month.addEventListener('change', upExp);
+            if (year)  year.addEventListener('change',  upExp);
+        }
+
+        /* ── Init ── */
+        jQuery(document.body).on('updated_checkout', setupTabs);
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+            document.addEventListener('DOMContentLoaded', setupTabs);
         } else {
-            setTimeout(init, 200); // garante que o DOM do gateway já foi montado
+            setupTabs();
         }
-
-        jQuery(document.body).on('updated_checkout', function() {
-            tabsDone = false; cardDone = false;
-            setTimeout(function() { setupTabs(); injectCardPreview(); }, 500);
-        });
 
     })();
     </script>
