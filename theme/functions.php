@@ -636,7 +636,8 @@ function slybot_access_styles() {
 
 add_filter('woocommerce_checkout_fields', function($fields) {
     $remove = ['billing_company', 'billing_address_1', 'billing_address_2',
-               'billing_city', 'billing_state', 'billing_postcode', 'billing_country'];
+               'billing_city', 'billing_state', 'billing_postcode', 'billing_country',
+               'billing_number', 'billing_neighborhood', 'billing_bairro'];
     foreach ($remove as $key) {
         unset($fields['billing'][$key]);
     }
@@ -665,21 +666,15 @@ add_action('wp_head', function() {
     /* Grid 2 colunas com template areas */
     form.woocommerce-checkout {
         display: grid !important;
-        grid-template-columns: 1fr 380px !important;
-        grid-template-areas: "customer review" !important;
-        gap: 28px !important;
-        align-items: start !important;
+        grid-template-columns: 1fr !important;
+        grid-template-areas: "customer" "review" !important;
+        gap: 24px !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
     }
     #customer_details     { grid-area: customer; }
     #order_review_heading { display: none !important; }
     #order_review         { grid-area: review; }
-
-    @media (max-width: 860px) {
-        form.woocommerce-checkout {
-            grid-template-columns: 1fr !important;
-            grid-template-areas: "customer" "review" !important;
-        }
-    }
 
     /* ── Remove colunas internas do WC ── */
     .col2-set { width: 100% !important; }
