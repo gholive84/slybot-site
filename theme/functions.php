@@ -888,7 +888,7 @@ add_action('wp_head', function() {
         display: block !important;
         background: transparent !important;
         border: none !important;
-        padding: 8px 20px 20px !important;
+        padding: 4px 16px 16px !important;
         margin: 0 !important;
     }
     #payment .payment_methods li:has(input[type=radio]:checked) .payment_box::before {
@@ -900,7 +900,7 @@ add_action('wp_head', function() {
         display: block;
         width: 100%;
         max-width: 240px;
-        margin: 4px auto 20px;
+        margin: 4px auto 14px;
     }
     .slybot-cc-card {
         background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -955,7 +955,24 @@ add_action('wp_head', function() {
         font-size: 11px; font-weight: 600; color: #fff;
         letter-spacing: 1px; font-family: 'Courier New', monospace; text-align: right;
     }
-    .slybot-cc-chip { position: relative; z-index: 1; }
+    .slybot-cc-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative; z-index: 1;
+    }
+    .slybot-cc-chip { }
+    .slybot-cc-brand {
+        font-size: 13px;
+        font-weight: 800;
+        color: rgba(255,255,255,.85);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-style: italic;
+        text-shadow: 0 1px 4px rgba(0,0,0,.4);
+        min-width: 60px;
+        text-align: right;
+    }
 
     @media (max-width: 480px) {
         #slybot-card-preview { display: none !important; }
@@ -998,7 +1015,7 @@ add_action('wp_head', function() {
     }
     #payment .payment_box input::placeholder { color: #9ca3af !important; font-size: 13px !important; }
     #payment .payment_box .form-row,
-    #payment .payment_box p { margin-bottom: 14px !important; }
+    #payment .payment_box p { margin-bottom: 10px !important; }
     #payment .payment_box .form-row-first,
     #payment .payment_box .form-row-last {
         width: calc(50% - 6px) !important;
@@ -1080,7 +1097,10 @@ add_action('wp_footer', function() {
             + '</svg>';
 
         var CARD_HTML = '<div class="slybot-cc-card">'
-            + '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
+            + '<div class="slybot-cc-top">'
+            +   '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
+            +   '<div class="slybot-cc-brand" id="slcc-brand"></div>'
+            + '</div>'
             + '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
             + '<div class="slybot-cc-footer">'
             + '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
@@ -1137,14 +1157,19 @@ add_action('wp_footer', function() {
             }, 1500);
         }
 
-        /* Live update */
-        function sel(arr) {
-            for (var i = 0; i < arr.length; i++) {
-                var e = document.querySelector(arr[i]);
-                if (e) return e;
-            }
-            return null;
+        /* Detecta bandeira pelo número */
+        function detectBrand(v) {
+            v = v.replace(/\D/g, '');
+            if (/^4/.test(v))           return 'VISA';
+            if (/^5[1-5]/.test(v))      return 'MASTERCARD';
+            if (/^3[47]/.test(v))       return 'AMEX';
+            if (/^(60|65|38|35)/.test(v)) return 'ELO';
+            if (/^3(?:0[0-5]|[68])/.test(v)) return 'DINERS';
+            if (/^6(?:011|5)/.test(v))  return 'DISCOVER';
+            return '';
         }
+
+        /* Live update */
         function maskNum(v) {
             v = v.replace(/\D/g, '').substring(0, 16);
             var o = '';
@@ -1155,20 +1180,41 @@ add_action('wp_footer', function() {
             return o;
         }
         function bindFields() {
-            var num   = sel(['input[id*="card_number"]','input[name*="card_number"]','input[placeholder*="mero"]','input[placeholder*="art"]']);
-            var name  = sel(['input[id*="holder"]','input[name*="holder"]','input[placeholder*="Titular"]','input[placeholder*="impresso"]','input[placeholder*="Nome"]']);
-            var month = sel(['select[id*="month"]','select[id*="mes"]','select[name*="month"]','select[name*="mes"]','select[id*="Month"]']);
-            var year  = sel(['select[id*="year"]','select[id*="ano"]','select[name*="year"]','select[name*="ano"]','select[id*="Year"]']);
+            var box = findCreditBox();
+            if (!box) return;
 
-            function upNum()  { var e=document.getElementById('slcc-num');    if(e && num)  e.textContent = maskNum(num.value); }
-            function upName() { var e=document.getElementById('slcc-holder'); if(e && name) e.textContent = name.value.toUpperCase() || 'NOME COMPLETO'; }
-            function upExp()  { var e=document.getElementById('slcc-expiry'); if(!e) return;
-                e.textContent = (month && month.value ? month.value : 'MM') + '/' + (year && year.value ? String(year.value).slice(-2) : 'AA');
+            var numEl    = document.getElementById('slcc-num');
+            var holderEl = document.getElementById('slcc-holder');
+            var expiryEl = document.getElementById('slcc-expiry');
+            var monthSel = null, yearSel = null;
+
+            // Busca todos os inputs no box e classifica por atributos
+            box.querySelectorAll('input').forEach(function(inp) {
+                if (inp.type === 'radio' || inp.type === 'checkbox' || inp.type === 'hidden') return;
+                var key = (inp.id + ' ' + inp.name + ' ' + (inp.placeholder || '')).toLowerCase();
+                var isNum  = key.indexOf('number') > -1 || key.indexOf('numero') > -1 || key.indexOf('card') > -1;
+                var isName = key.indexOf('holder') > -1 || key.indexOf('nome') > -1 || key.indexOf('name') > -1 || key.indexOf('titular') > -1;
+                if (isNum)  inp.addEventListener('input',  function() {
+                    if (numEl)    numEl.textContent    = maskNum(this.value);
+                    var brandEl = document.getElementById('slcc-brand');
+                    if (brandEl) brandEl.textContent = detectBrand(this.value);
+                });
+                if (isName) inp.addEventListener('input',  function() { if (holderEl) holderEl.textContent = this.value.toUpperCase() || 'NOME COMPLETO'; });
+            });
+
+            // Selects de mês/ano
+            box.querySelectorAll('select').forEach(function(sel) {
+                var key = (sel.id + ' ' + sel.name).toLowerCase();
+                if (key.indexOf('month') > -1 || key.indexOf('mes') > -1) monthSel = sel;
+                if (key.indexOf('year')  > -1 || key.indexOf('ano') > -1) yearSel  = sel;
+            });
+            function upExp() {
+                if (!expiryEl) return;
+                expiryEl.textContent = (monthSel && monthSel.value ? monthSel.value : 'MM')
+                    + '/' + (yearSel && yearSel.value ? String(yearSel.value).slice(-2) : 'AA');
             }
-            if (num)   num.addEventListener('input',   upNum);
-            if (name)  name.addEventListener('input',  upName);
-            if (month) month.addEventListener('change', upExp);
-            if (year)  year.addEventListener('change',  upExp);
+            if (monthSel) monthSel.addEventListener('change', upExp);
+            if (yearSel)  yearSel.addEventListener('change',  upExp);
         }
 
         /* Init */
