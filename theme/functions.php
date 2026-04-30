@@ -1033,9 +1033,6 @@ add_action('wp_head', function() {
         text-shadow: 0 1px 4px rgba(0,0,0,.4); text-align: right;
     }
 
-    @media (max-width: 480px) {
-        #slybot-card-preview { display: none !important; }
-    }
 
     /* ── Campos do gateway de pagamento ── */
     #payment .payment_box label,
