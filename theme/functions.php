@@ -823,102 +823,84 @@ add_action('wp_head', function() {
         border-radius: 0 0 16px 16px !important;
     }
 
-    /* Tabs de método de pagamento — só a parte de botão */
+    /* Accordion vertical — CSS puro, sem mover DOM */
     #payment .payment_methods {
-        display: flex !important;
-        gap: 10px !important;
+        display: block !important;
         list-style: none !important;
         padding: 0 !important;
-        margin: 0 0 14px !important;
-        flex-wrap: wrap !important;
-    }
-    /* Li: apenas o contorno do tab; payment_box será movida pelo JS */
-    #payment .payment_methods li {
-        flex: 1 !important;
-        min-width: 120px !important;
+        margin: 0 0 16px !important;
         border: 1.5px solid #e5e7eb !important;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+    #payment .payment_methods li {
+        border: none !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        border-radius: 0 !important;
         padding: 0 !important;
         margin: 0 !important;
         background: #fff !important;
         cursor: pointer !important;
-        transition: background .2s, border-color .2s !important;
+        transition: background .15s !important;
     }
-    /* Radio invisível */
+    #payment .payment_methods li:last-child { border-bottom: none !important; }
+
+    /* Radio invisível mas funcional */
     #payment .payment_methods input[type=radio] {
         position: absolute !important;
         opacity: 0 !important;
         pointer-events: none !important;
     }
-    /* Label do tab */
-    #payment .payment_methods li {
-        height: 52px !important;
-    }
+
+    /* Label: linha clicável 52px */
     #payment .payment_methods > li > label {
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-        height: 100% !important;
-        gap: 6px !important;
-        padding: 8px 12px !important;
-        font-size: 11px !important;
+        height: 52px !important;
+        padding: 0 20px !important;
+        font-size: 12px !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
-        letter-spacing: .4px !important;
-        white-space: nowrap !important;
+        letter-spacing: .5px !important;
         color: #374151 !important;
         cursor: pointer !important;
         margin: 0 !important;
-        line-height: 1.3 !important;
-        transition: color .2s !important;
+        gap: 10px !important;
+        transition: background .15s, color .15s !important;
+        white-space: nowrap !important;
     }
-    /* Tab selecionado */
-    #payment .payment_methods li:has(input[type=radio]:checked) {
-        background: #111827 !important;
-        border-color: #111827 !important;
-    }
+
+    /* Tab selecionado: label escuro */
     #payment .payment_methods li:has(input[type=radio]:checked) > label {
+        background: #111827 !important;
         color: #fff !important;
     }
-    #payment .payment_methods li:not(:has(input:checked)):hover {
-        border-color: #d1d5db !important;
+    #payment .payment_methods li:not(:has(input:checked)):hover > label {
         background: #f9fafb !important;
     }
-    /* Payment boxes DENTRO do li ficam ocultas — JS as move para fora */
-    #payment .payment_methods .payment_box { display: none !important; }
 
-    /* Container externo onde o JS deposita o payment box ativo */
-    #slybot-pbox-container {
-        background: #fff;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
+    /* Payment box: oculto por default */
+    #payment .payment_methods .payment_box {
+        display: none !important;
     }
-    #slybot-pbox-container .payment_box {
+    /* Payment box: visível quando tab selecionado */
+    #payment .payment_methods li:has(input[type=radio]:checked) .payment_box {
         display: block !important;
         background: transparent !important;
         border: none !important;
-        padding: 0 !important;
+        padding: 8px 20px 20px !important;
         margin: 0 !important;
     }
-    #slybot-pbox-container .payment_box::before { display: none !important; }
-
-    /* Card visual preview — centralizado acima dos campos */
-    .slybot-pbox-item { display: block !important; width: 100% !important; }
-    #slybot-pbox-container .payment_box input,
-    #slybot-pbox-container .payment_box select {
-        max-width: 100% !important;
-        min-width: 0 !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
+    #payment .payment_methods li:has(input[type=radio]:checked) .payment_box::before {
+        display: none !important;
     }
+
+    /* ── Card visual preview ── */
     #slybot-card-preview {
         display: block;
         width: 100%;
-        max-width: 220px;
-        margin: 0 auto 20px;
+        max-width: 240px;
+        margin: 4px auto 20px;
     }
     .slybot-cc-card {
         background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -961,35 +943,73 @@ add_action('wp_head', function() {
         position: relative; z-index: 1;
     }
     .slybot-cc-lbl {
-        font-size: 7px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .8px;
-        color: rgba(255,255,255,.5);
-        margin-bottom: 3px;
+        font-size: 7px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .8px; color: rgba(255,255,255,.5); margin-bottom: 3px;
     }
     .slybot-cc-holder {
-        font-size: 10px;
-        font-weight: 600;
-        color: #fff;
-        max-width: 100px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        letter-spacing: .6px;
+        font-size: 10px; font-weight: 600; color: #fff;
+        max-width: 110px; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; letter-spacing: .6px;
     }
     .slybot-cc-expiry {
-        font-size: 11px;
-        font-weight: 600;
-        color: #fff;
-        letter-spacing: 1px;
-        font-family: 'Courier New', monospace;
-        text-align: right;
+        font-size: 11px; font-weight: 600; color: #fff;
+        letter-spacing: 1px; font-family: 'Courier New', monospace; text-align: right;
     }
     .slybot-cc-chip { position: relative; z-index: 1; }
 
-    @media (max-width: 600px) {
+    @media (max-width: 480px) {
         #slybot-card-preview { display: none !important; }
+    }
+
+    /* ── Campos do gateway de pagamento ── */
+    #payment .payment_box label,
+    #payment .payment_box .form-row label {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: .4px !important;
+        color: #374151 !important;
+        margin-bottom: 6px !important;
+        display: block !important;
+    }
+    #payment .payment_box input,
+    #payment .payment_box select,
+    #payment .payment_box textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 11px 14px !important;
+        border: 1.5px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        font-size: 14px !important;
+        color: #111827 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        outline: none !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        display: block !important;
+        transition: border-color .2s, box-shadow .2s !important;
+    }
+    #payment .payment_box input:focus,
+    #payment .payment_box select:focus {
+        border-color: #ff6a00 !important;
+        box-shadow: 0 0 0 3px rgba(255,106,0,.10) !important;
+    }
+    #payment .payment_box input::placeholder { color: #9ca3af !important; font-size: 13px !important; }
+    #payment .payment_box .form-row,
+    #payment .payment_box p { margin-bottom: 14px !important; }
+    #payment .payment_box .form-row-first,
+    #payment .payment_box .form-row-last {
+        width: calc(50% - 6px) !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+        box-sizing: border-box !important;
+    }
+    #payment .payment_box .form-row-first { margin-right: 12px !important; }
+    #payment .payment_box > p:first-child,
+    #payment .payment_box .asaas-description {
+        font-size: 13px !important; color: #6b7280 !important; margin-bottom: 16px !important;
     }
 
     /* ── Botão finalizar pedido ── */
@@ -1011,7 +1031,7 @@ add_action('wp_head', function() {
     }
     #place_order:hover { background: #e55e00 !important; }
 
-    /* ── Notificações de erro/aviso ── */
+    /* ── Notificações ── */
     .woocommerce-NoticeGroup .woocommerce-error,
     .woocommerce-NoticeGroup .woocommerce-message {
         border-left: 4px solid #ff6a00 !important;
@@ -1023,8 +1043,6 @@ add_action('wp_head', function() {
     }
     .woocommerce-NoticeGroup .woocommerce-error li,
     .woocommerce-NoticeGroup .woocommerce-message li { margin: 0 !important; }
-
-    /* ── "Já tem conta?" ── */
     .woocommerce-form-login-toggle .woocommerce-info {
         background: #f8fafc !important;
         border: 1px solid #e5e7eb !important;
@@ -1037,112 +1055,6 @@ add_action('wp_head', function() {
     }
     .woocommerce-form-login-toggle .woocommerce-info::before { display: none !important; }
     .woocommerce-form-login-toggle a { color: #ff6a00 !important; font-weight: 600; }
-
-    /* ── Campos do Asaas (cartão de crédito) ── */
-    #payment .payment_box {
-        background: transparent !important;
-        border: none !important;
-        padding: 16px 4px 4px !important;
-    }
-    #payment .payment_box::before { display: none !important; }
-
-    /* Texto "Pague com cartão..." */
-    #payment .payment_box > p:first-child,
-    #payment .payment_box .asaas-description {
-        font-size: 13px !important;
-        color: #6b7280 !important;
-        margin-bottom: 16px !important;
-    }
-    #payment .payment_box > p:first-child a,
-    #payment .payment_box .asaas-description a {
-        color: #ff6a00 !important;
-        font-weight: 600 !important;
-    }
-
-    /* Labels dos campos do gateway */
-    #payment .payment_box label,
-    #payment .payment_box .form-row label {
-        font-size: 11px !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: .4px !important;
-        color: #374151 !important;
-        margin-bottom: 6px !important;
-        display: block !important;
-    }
-
-    /* Inputs e selects do gateway */
-    #payment .payment_box input[type=text],
-    #payment .payment_box input[type=tel],
-    #payment .payment_box input[type=number],
-    #payment .payment_box input[type=email],
-    #payment .payment_box select,
-    #payment .payment_box .form-row input,
-    #payment .payment_box .form-row select {
-        width: 100% !important;
-        padding: 11px 14px !important;
-        border: 1.5px solid #e5e7eb !important;
-        border-radius: 8px !important;
-        font-size: 14px !important;
-        color: #111827 !important;
-        background: #fff !important;
-        box-shadow: none !important;
-        outline: none !important;
-        transition: border-color .2s, box-shadow .2s !important;
-        height: auto !important;
-        box-sizing: border-box !important;
-    }
-    #payment .payment_box input[type=text]:focus,
-    #payment .payment_box input[type=tel]:focus,
-    #payment .payment_box input[type=number]:focus,
-    #payment .payment_box select:focus,
-    #payment .payment_box .form-row input:focus,
-    #payment .payment_box .form-row select:focus {
-        border-color: #ff6a00 !important;
-        box-shadow: 0 0 0 3px rgba(255,106,0,.10) !important;
-    }
-    #payment .payment_box input::placeholder { color: #9ca3af !important; font-size: 13px !important; }
-
-    /* Espaçamento entre grupos de campos */
-    #payment .payment_box .form-row,
-    #payment .payment_box p {
-        margin-bottom: 14px !important;
-    }
-
-    /* Campos lado a lado (Mês / Ano) */
-    #payment .payment_box .form-row-first,
-    #payment .payment_box .form-row-last {
-        width: calc(50% - 6px) !important;
-        display: inline-block !important;
-        vertical-align: top !important;
-    }
-    #payment .payment_box .form-row-first { margin-right: 12px !important; }
-
-    /* Label "Data de expiração" acima do par Mês/Ano */
-    #payment .payment_box .asaas-expiry-label,
-    #payment .payment_box .expiry-group > label {
-        font-size: 11px !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: .4px !important;
-        color: #374151 !important;
-        display: block !important;
-        margin-bottom: 8px !important;
-    }
-
-    /* Select de parcelas */
-    #payment .payment_box select[name*="installment"],
-    #payment .payment_box select[id*="installment"],
-    #payment .payment_box .asaas-installments select {
-        font-weight: 600 !important;
-        color: #111827 !important;
-    }
-
-    /* Ícone de cartão (manter visível, só ajustar posição) */
-    #payment .payment_box .asaas-card-brand,
-    #payment .payment_box input[name*="card_number"] {
-        padding-right: 42px !important;
-    }
     </style>
     <?php
 }, 99);
@@ -1167,94 +1079,105 @@ add_action('wp_footer', function() {
             + '<rect x="17" y="12" width="16" height="14" fill="#d4a843"/>'
             + '</svg>';
 
-        /* ── Monta tabs: move TODOS os boxes de uma vez ── */
-        function setupTabs() {
-            var ul = document.querySelector('#payment .payment_methods');
-            if (!ul || document.getElementById('slybot-pbox-container')) return;
+        var CARD_HTML = '<div class="slybot-cc-card">'
+            + '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
+            + '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
+            + '<div class="slybot-cc-footer">'
+            + '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
+            + '<div><div class="slybot-cc-lbl">Validade</div><div class="slybot-cc-expiry" id="slcc-expiry">MM/AA</div></div>'
+            + '</div></div>';
 
-            var container = document.createElement('div');
-            container.id  = 'slybot-pbox-container';
-            ul.parentNode.insertBefore(container, ul.nextSibling);
-
-            // Move TODOS os payment_box agora (pré-renderizados)
-            ul.querySelectorAll('li').forEach(function(li) {
+        /* Encontra o payment_box do cartão de crédito (não-pix) */
+        function findCreditBox() {
+            var found = null;
+            document.querySelectorAll('#payment .payment_methods li').forEach(function(li) {
                 var radio = li.querySelector('input[type=radio]');
-                var box   = li.querySelector('.payment_box');
-                if (!box || !radio) return;
-
-                var wrap = document.createElement('div');
-                wrap.className        = 'slybot-pbox-item';
-                wrap.dataset.method   = radio.value;
-                wrap.style.display    = radio.checked ? 'block' : 'none';
-                box.style.display     = 'block';
-                wrap.appendChild(box);
-                container.appendChild(wrap);
+                if (radio && radio.value.toLowerCase().indexOf('pix') === -1) {
+                    found = li.querySelector('.payment_box');
+                }
             });
-
-            // Inicia card preview no box de cartão (já está no DOM)
-            addCardPreview(container);
-
-            // Alterna ao clicar nas tabs
-            ul.addEventListener('change', function(e) {
-                if (!e.target || e.target.type !== 'radio') return;
-                container.querySelectorAll('.slybot-pbox-item').forEach(function(item) {
-                    item.style.display = item.dataset.method === e.target.value ? 'block' : 'none';
-                });
-            });
+            return found;
         }
 
-        /* ── Card preview: topo do box, centralizado ── */
-        function addCardPreview(container) {
-            var creditWrap = null;
-            container.querySelectorAll('.slybot-pbox-item').forEach(function(item) {
-                if (item.dataset.method.toLowerCase().indexOf('pix') === -1) creditWrap = item;
-            });
-            if (!creditWrap || creditWrap.querySelector('#slybot-card-preview')) return;
-
+        /* Insere o card preview no topo do payment_box */
+        function insertCardPreview(box) {
+            if (document.getElementById('slybot-card-preview')) return;
             var cardEl = document.createElement('div');
             cardEl.id  = 'slybot-card-preview';
-            cardEl.innerHTML = '<div class="slybot-cc-card">'
-                + '<div class="slybot-cc-chip">' + CHIP_SVG + '</div>'
-                + '<div class="slybot-cc-number" id="slcc-num">•••• •••• •••• ••••</div>'
-                + '<div class="slybot-cc-footer">'
-                +   '<div><div class="slybot-cc-lbl">Titular</div><div class="slybot-cc-holder" id="slcc-holder">NOME COMPLETO</div></div>'
-                +   '<div><div class="slybot-cc-lbl">Validade</div><div class="slybot-cc-expiry" id="slcc-expiry">MM/AA</div></div>'
-                + '</div></div>';
-
-            // Insere antes do payment_box (no topo do wrapper)
-            var box = creditWrap.querySelector('.payment_box');
-            creditWrap.insertBefore(cardEl, box);
-
+            cardEl.innerHTML = CARD_HTML;
+            box.insertBefore(cardEl, box.firstChild);
             bindFields();
         }
 
-        /* ── Live update dos campos ── */
-        function sel(arr) { for(var i=0;i<arr.length;i++){var e=document.querySelector(arr[i]);if(e)return e;} return null; }
-        function maskNum(v) {
-            v=v.replace(/\D/g,'').substring(0,16); var o='';
-            for(var i=0;i<16;i++){if(i>0&&i%4===0)o+=' '; o+=v[i]!==undefined?v[i]:'•';} return o;
+        /* Tenta adicionar o card preview; usa MutationObserver se campos ainda não existem */
+        function addCardPreview() {
+            var box = findCreditBox();
+            if (!box) return;
+            if (document.getElementById('slybot-card-preview')) return;
+
+            // Se Asaas já populou os campos, inserir agora
+            if (box.querySelector('input, select')) {
+                insertCardPreview(box);
+                return;
+            }
+            // Caso contrário, observar até aparecerem
+            var obs = new MutationObserver(function() {
+                if (box.querySelector('input, select')) {
+                    obs.disconnect();
+                    insertCardPreview(box);
+                }
+            });
+            obs.observe(box, { childList: true, subtree: true });
+            // Fallback: tentar após 1,5s
+            setTimeout(function() {
+                obs.disconnect();
+                if (!document.getElementById('slybot-card-preview')) {
+                    insertCardPreview(box);
+                }
+            }, 1500);
         }
 
+        /* Live update */
+        function sel(arr) {
+            for (var i = 0; i < arr.length; i++) {
+                var e = document.querySelector(arr[i]);
+                if (e) return e;
+            }
+            return null;
+        }
+        function maskNum(v) {
+            v = v.replace(/\D/g, '').substring(0, 16);
+            var o = '';
+            for (var i = 0; i < 16; i++) {
+                if (i > 0 && i % 4 === 0) o += ' ';
+                o += v[i] !== undefined ? v[i] : '•';
+            }
+            return o;
+        }
         function bindFields() {
-            var num   = sel(['input[id*="card_number"]','input[name*="card_number"]','input[placeholder*="Número do Cart"]','input[placeholder*="Cartão"]']);
-            var name  = sel(['input[id*="holder"]','input[name*="holder"]','input[placeholder*="Titular"]','input[placeholder*="impresso"]','input[placeholder*="Nome no"]']);
-            var month = sel(['select[id*="month"]','select[id*="mes"]','select[name*="month"]','select[name*="mes"]']);
-            var year  = sel(['select[id*="year"]','select[id*="ano"]','select[name*="year"]','select[name*="ano"]']);
+            var num   = sel(['input[id*="card_number"]','input[name*="card_number"]','input[placeholder*="mero"]','input[placeholder*="art"]']);
+            var name  = sel(['input[id*="holder"]','input[name*="holder"]','input[placeholder*="Titular"]','input[placeholder*="impresso"]','input[placeholder*="Nome"]']);
+            var month = sel(['select[id*="month"]','select[id*="mes"]','select[name*="month"]','select[name*="mes"]','select[id*="Month"]']);
+            var year  = sel(['select[id*="year"]','select[id*="ano"]','select[name*="year"]','select[name*="ano"]','select[id*="Year"]']);
 
-            if (num)  num.addEventListener('input',  function(){ var e=document.getElementById('slcc-num');   if(e)e.textContent=maskNum(this.value); });
-            if (name) name.addEventListener('input', function(){ var e=document.getElementById('slcc-holder');if(e)e.textContent=this.value.toUpperCase()||'NOME COMPLETO'; });
-            function upExp(){ var e=document.getElementById('slcc-expiry');if(!e)return; e.textContent=(month&&month.value?month.value:'MM')+'/'+(year&&year.value?String(year.value).slice(-2):'AA'); }
+            function upNum()  { var e=document.getElementById('slcc-num');    if(e && num)  e.textContent = maskNum(num.value); }
+            function upName() { var e=document.getElementById('slcc-holder'); if(e && name) e.textContent = name.value.toUpperCase() || 'NOME COMPLETO'; }
+            function upExp()  { var e=document.getElementById('slcc-expiry'); if(!e) return;
+                e.textContent = (month && month.value ? month.value : 'MM') + '/' + (year && year.value ? String(year.value).slice(-2) : 'AA');
+            }
+            if (num)   num.addEventListener('input',   upNum);
+            if (name)  name.addEventListener('input',  upName);
             if (month) month.addEventListener('change', upExp);
             if (year)  year.addEventListener('change',  upExp);
         }
 
-        /* ── Init ── */
-        jQuery(document.body).on('updated_checkout', setupTabs);
+        /* Init */
+        jQuery(document.body).on('updated_checkout', addCardPreview);
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupTabs);
+            document.addEventListener('DOMContentLoaded', addCardPreview);
         } else {
-            setupTabs();
+            addCardPreview();
         }
 
     })();
