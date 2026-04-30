@@ -1016,6 +1016,7 @@ add_action('wp_head', function() {
     #payment .payment_box input::placeholder { color: #9ca3af !important; font-size: 13px !important; }
     #payment .payment_box .form-row,
     #payment .payment_box p { margin-bottom: 10px !important; }
+    .woocommerce-checkout #payment div.form-row { padding: 0 !important; }
     #payment .payment_box .form-row-first,
     #payment .payment_box .form-row-last {
         width: calc(50% - 6px) !important;
