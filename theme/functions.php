@@ -905,8 +905,8 @@ add_action('wp_head', function() {
     }
     #slybot-pbox-container .payment_box::before { display: none !important; }
 
-    /* Card visual preview */
-    #slybot-card-preview { flex-shrink: 0; width: 190px; }
+    /* Card visual preview — absolute no container */
+    #slybot-card-preview { width: 180px; }
     .slybot-cc-card {
         background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         border-radius: 14px;
@@ -974,18 +974,9 @@ add_action('wp_head', function() {
     }
     .slybot-cc-chip { position: relative; z-index: 1; }
 
-    /* Layout: campos | card */
-    .slybot-cc-inner {
-        display: flex !important;
-        gap: 20px !important;
-        align-items: flex-start !important;
-    }
-    .slybot-cc-fields { flex: 1 !important; min-width: 0 !important; }
-
     @media (max-width: 600px) {
-        .slybot-cc-inner { flex-direction: column !important; }
-        #slybot-card-preview { width: 100% !important; max-width: 260px !important; margin: 0 auto !important; }
-        .slybot-cc-card { aspect-ratio: 1.7; }
+        #slybot-pbox-container { padding-right: 20px !important; }
+        #slybot-card-preview { display: none !important; }
     }
 
     /* ── Botão finalizar pedido ── */
@@ -1277,33 +1268,26 @@ add_action('wp_footer', function() {
         function injectCardPreview() {
             if (cardDone || document.getElementById('slybot-card-preview')) return;
 
-            // Encontra o box ativo no container externo
-            var activeItem = document.querySelector('#slybot-pbox-container .slybot-pbox-item[style*="block"]');
-            if (!activeItem) {
-                // Fallback: primeiro item
-                activeItem = document.querySelector('#slybot-pbox-container .slybot-pbox-item');
-            }
+            var container = document.getElementById('slybot-pbox-container');
+            if (!container) return;
+
+            // Só injeta no método de cartão (não PIX)
+            var activeItem = container.querySelector('.slybot-pbox-item[style*="block"]')
+                          || container.querySelector('.slybot-pbox-item');
             if (!activeItem) return;
 
-            var box = activeItem.querySelector('.payment_box');
-            if (!box) return;
-
-            // Só injeta no cartão (não no PIX)
             var method = activeItem.dataset.method || '';
             if (method.toLowerCase().indexOf('pix') !== -1) return;
 
             cardDone = true;
 
-            var inner = document.createElement('div');
-            inner.className = 'slybot-cc-inner';
+            // Card em posição absoluta no canto — não mexe nos campos
+            container.style.position = 'relative';
+            container.style.paddingRight = '210px';
 
-            var fieldsWrap = document.createElement('div');
-            fieldsWrap.className = 'slybot-cc-fields';
-            while (box.firstChild) fieldsWrap.appendChild(box.firstChild);
-
-            inner.appendChild(fieldsWrap);
-            inner.appendChild(buildCardEl());
-            box.appendChild(inner);
+            var cardEl = buildCardEl();
+            cardEl.style.cssText = 'position:absolute;right:20px;top:20px;width:180px;';
+            container.appendChild(cardEl);
 
             bindFields();
         }
